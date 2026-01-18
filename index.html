@@ -533,8 +533,8 @@
                             >
                         </div>
                         
-                        <!-- SELECTOR: Comparar Indexada vs Fija -->
-                        <div class="pt-4 border-t border-slate-200">
+                        <!-- SELECTOR: Comparar Indexada vs Fija (Oculto en versión DRK Only) -->
+                        <div class="pt-4 border-t border-slate-200 hidden" style="display: none !important;">
                             <label class="flex items-center gap-3 cursor-pointer">
                                 <input 
                                     type="checkbox" 
@@ -21393,12 +21393,9 @@ ${clientName}
             const { results, dias, kwh, totalCliente, comparisonMode } = window.gasExportData;
             
             try {
-                // Detectar si es POWER CUP o DRK basado en comparisonMode
-                const isPowerCup = comparisonMode === 'overall_best';
-                
-                const isDual = results.length === 2 && 
-                              results.some(r => r.name.toUpperCase().includes('INDEX')) &&
-                              results.some(r => !r.name.toUpperCase().includes('INDEX'));
+                // En versión DRK Only: siempre usar modo DRK simple (sin Power Cup, sin comparación dual)
+                const isPowerCup = false; // Forzado a false en versión DRK Only
+                const isDual = false; // Forzado a false en versión DRK Only - sin comparación indexada vs fija
                 
                 if (isDual) {
                     const resIndexed = results.find(r => r.name.toUpperCase().includes('INDEX'));
@@ -21410,11 +21407,8 @@ ${clientName}
                         await generateGasPDF_Dual(resFijo, resIndexed, dias, kwh, totalCliente, clientName, comercialCode, clientAddress);
                     }
                 } else {
-                    if (isPowerCup) {
-                        await generateGasPDF_Simple_PowerCup(results[0], dias, kwh, totalCliente, clientName, comercialCode, clientAddress);
-                    } else {
-                        await generateGasPDF_Simple(results[0], dias, kwh, totalCliente, clientName, comercialCode, clientAddress);
-                    }
+                    // Siempre usar PDF simple con DRK
+                    await generateGasPDF_Simple(results[0], dias, kwh, totalCliente, clientName, comercialCode, clientAddress);
                 }
                 
                 // NUEVO: Restaurar idioma chino después de generar el PDF
