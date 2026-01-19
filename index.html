@@ -243,21 +243,20 @@
     <!-- Main Content Area -->
     <div id="app" class="w-full max-w-lg mx-auto p-4 md:p-6 flex-grow">
 
-        <!-- MODO DE COMPARACIÓN (Oculto permanentemente en versión DRK Only) -->
-        <div id="modo-comparacion-section" class="fade-in mb-6 hidden" style="display: none !important;">
+        <!-- MODO DE COMPARACIÓN (Siempre visible al inicio) -->
+        <div id="modo-comparacion-section" class="fade-in mb-6">
             <div class="bg-white p-6 md:p-8 rounded-3xl shadow-2xl w-full border-t-4 border-drk-500">
                 <p class="text-sm font-bold text-drk-800 mb-3 text-center uppercase tracking-wider">MODO DE COMPARACIÓN</p>
                 <div class="flex flex-wrap justify-center gap-2 text-sm">
-                    <label class="mode-selector flex-1 px-2 py-2 rounded-lg cursor-pointer transition border-2 border-drk-500 text-white bg-drk-500">
-                        <input type="radio" name="comparison_mode" value="drk_only" class="hidden" checked>
-                        <span class="font-semibold flex items-center justify-between w-full">DRK Únicamente<svg class="w-4 h-4 ml-1 checkmark-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg></span>
+                    <label class="mode-selector flex-1 px-2 py-2 rounded-lg cursor-pointer transition border-2 border-drk-300 text-drk-700 bg-white hover:bg-drk-100 hover:border-drk-400">
+                        <input type="radio" name="comparison_mode" value="drk_only" class="hidden">
+                        <span class="font-semibold flex items-center justify-between w-full">DRK Únicamente<svg class="w-4 h-4 ml-1 checkmark-icon hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg></span>
                     </label>
-                    <!-- DRK Prioritario y Power Cup ocultos en esta versión -->
-                    <label class="mode-selector flex-1 px-2 py-2 rounded-lg cursor-pointer transition border-2 border-drk-500 text-white bg-drk-500 hover:bg-drk-600 hidden">
-                        <input type="radio" name="comparison_mode" value="drk_prioritized" class="hidden">
+                    <label class="mode-selector flex-1 px-2 py-2 rounded-lg cursor-pointer transition border-2 border-drk-500 text-white bg-drk-500 hover:bg-drk-600">
+                        <input type="radio" name="comparison_mode" value="drk_prioritized" class="hidden" checked>
                         <span class="font-semibold flex items-center justify-between w-full">DRK Prioritario<svg class="w-4 h-4 ml-1 checkmark-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg></span>
                     </label>
-                    <label class="mode-selector flex-1 px-2 py-2 rounded-lg cursor-pointer transition border-2 border-powercup-300 text-powercup-700 bg-white hover:bg-powercup-100 hover:border-powercup-400 hidden">
+                    <label class="mode-selector flex-1 px-2 py-2 rounded-lg cursor-pointer transition border-2 border-powercup-300 text-powercup-700 bg-white hover:bg-powercup-100 hover:border-powercup-400">
                         <input type="radio" name="comparison_mode" value="overall_best" class="hidden">
                         <span class="font-black flex flex-col items-center justify-center w-full leading-tight">
                             <span class="text-base">POWER CUP</span><span class="text-xs font-semibold -mt-0.5">Global</span>
@@ -533,8 +532,8 @@
                             >
                         </div>
                         
-                        <!-- SELECTOR: Comparar Indexada vs Fija (Oculto en versión DRK Only) -->
-                        <div class="pt-4 border-t border-slate-200 hidden" style="display: none !important;">
+                        <!-- SELECTOR: Comparar Indexada vs Fija (Oculto en modo DUAL) -->
+                        <div id="gas-indexed-comparison-section" class="pt-4 border-t border-slate-200">
                             <label class="flex items-center gap-3 cursor-pointer">
                                 <input 
                                     type="checkbox" 
@@ -2354,23 +2353,35 @@
             };
             
             // Si tenemos finalResult, extraer la oferta real
-            if (finalResult && finalResult.offer) {
-                offerData = {
-                    ...finalResult.offer,
-                    // Añadir precios de potencia y energía si existen
-                    p1_power_price: finalResult.powerCosts?.[0]?.priceDay || finalResult.powerCosts?.[0]?.price_euro_kw_day,
-                    p2_power_price: finalResult.powerCosts?.[1]?.priceDay || finalResult.powerCosts?.[1]?.price_euro_kw_day,
-                    p3_power_price: finalResult.powerCosts?.[2]?.priceDay || finalResult.powerCosts?.[2]?.price_euro_kw_day,
-                    p4_power_price: finalResult.powerCosts?.[3]?.priceDay || finalResult.powerCosts?.[3]?.price_euro_kw_day,
-                    p5_power_price: finalResult.powerCosts?.[4]?.priceDay || finalResult.powerCosts?.[4]?.price_euro_kw_day,
-                    p6_power_price: finalResult.powerCosts?.[5]?.priceDay || finalResult.powerCosts?.[5]?.price_euro_kw_day,
-                    p1_price: finalResult.energyCosts?.[0]?.price || finalResult.energyCosts?.[0]?.price_euro_kwh,
-                    p2_price: finalResult.energyCosts?.[1]?.price || finalResult.energyCosts?.[1]?.price_euro_kwh,
-                    p3_price: finalResult.energyCosts?.[2]?.price || finalResult.energyCosts?.[2]?.price_euro_kwh,
-                    p4_price: finalResult.energyCosts?.[3]?.price || finalResult.energyCosts?.[3]?.price_euro_kwh,
-                    p5_price: finalResult.energyCosts?.[4]?.price || finalResult.energyCosts?.[4]?.price_euro_kwh,
-                    p6_price: finalResult.energyCosts?.[5]?.price || finalResult.energyCosts?.[5]?.price_euro_kwh
-                };
+            if (finalResult) {
+                if (finalResult.offer) {
+                    offerData = {
+                        ...finalResult.offer,
+                        // Añadir precios de potencia y energía si existen (para electricidad)
+                        p1_power_price: finalResult.powerCosts?.[0]?.priceDay || finalResult.powerCosts?.[0]?.price_euro_kw_day,
+                        p2_power_price: finalResult.powerCosts?.[1]?.priceDay || finalResult.powerCosts?.[1]?.price_euro_kw_day,
+                        p3_power_price: finalResult.powerCosts?.[2]?.priceDay || finalResult.powerCosts?.[2]?.price_euro_kw_day,
+                        p4_power_price: finalResult.powerCosts?.[3]?.priceDay || finalResult.powerCosts?.[3]?.price_euro_kw_day,
+                        p5_power_price: finalResult.powerCosts?.[4]?.priceDay || finalResult.powerCosts?.[4]?.price_euro_kw_day,
+                        p6_power_price: finalResult.powerCosts?.[5]?.priceDay || finalResult.powerCosts?.[5]?.price_euro_kw_day,
+                        p1_price: finalResult.energyCosts?.[0]?.price || finalResult.energyCosts?.[0]?.price_euro_kwh,
+                        p2_price: finalResult.energyCosts?.[1]?.price || finalResult.energyCosts?.[1]?.price_euro_kwh,
+                        p3_price: finalResult.energyCosts?.[2]?.price || finalResult.energyCosts?.[2]?.price_euro_kwh,
+                        p4_price: finalResult.energyCosts?.[3]?.price || finalResult.energyCosts?.[3]?.price_euro_kwh,
+                        p5_price: finalResult.energyCosts?.[4]?.price || finalResult.energyCosts?.[4]?.price_euro_kwh,
+                        p6_price: finalResult.energyCosts?.[5]?.price || finalResult.energyCosts?.[5]?.price_euro_kwh
+                    };
+                }
+                
+                // Si es gas, agregar precios de gas (siempre, incluso si no hay offer)
+                if (type === 'gas') {
+                    const energiaTotal = finalResult.energia || finalResult.total_energia || 0;
+                    const kwhTotal = parseFloat(data.kwh) || 1;
+                    const precioEnergiaUnitario = kwhTotal > 0 ? energiaTotal / kwhTotal : (finalResult.p_fijo_1 || 0);
+                    
+                    offerData.p_fijo_diario = finalResult.termino_fijo_diario || finalResult.p_fijo_diario || 0;
+                    offerData.p1_price = precioEnergiaUnitario; // Precio unitario de energía
+                }
             }
             
             const supply = {
@@ -2409,21 +2420,30 @@
                     dias: data.dias || 30
                 };
             } else {
+                // Para gas, extraer correctamente los datos de finalResult
+                const energiaTotal = finalResult?.energia || finalResult?.total_energia || 0;
+                const kwhTotal = totalKwh || 1; // Evitar división por 0
+                const precioEnergiaUnitario = kwhTotal > 0 ? energiaTotal / kwhTotal : (finalResult?.p_fijo_1 || 0);
+                
                 supply.gasBreakdown = {
                     totalKwh: totalKwh,
                     kwh: totalKwh,
                     dias: data.dias || 30,
-                    // Si hay finalResult con datos de gas, usarlos
-                    termino_fijo: finalResult?.total_fijo || 0,
-                    termino_fijo_diario: finalResult?.p_fijo_diario || 0,
-                    energia: finalResult?.total_energia || 0,
+                    // Mapear correctamente los campos de gas
+                    termino_fijo: finalResult?.termino_fijo || finalResult?.total_fijo || 0,
+                    termino_fijo_diario: finalResult?.termino_fijo_diario || finalResult?.p_fijo_diario || 0,
+                    precio_fijo_diario: finalResult?.termino_fijo_diario || finalResult?.p_fijo_diario || 0,
+                    energia: energiaTotal,
+                    precio_energia: precioEnergiaUnitario, // Calculado: total energía / kWh
                     impuesto_hidrocarburos: finalResult?.impuesto_hidrocarburos || 0,
                     subtotal: finalResult?.subtotal || 0,
                     iva: finalResult?.iva || 0,
                     total: finalResult?.total || 0,
                     total_anual: supply.totalAnnual,
                     ahorro_mensual: 0,
-                    ahorro_anual: (data.originalBillAnnual || 0) - supply.totalAnnual
+                    ahorro_anual: (data.originalBillAnnual || 0) - supply.totalAnnual,
+                    // Agregar también la oferta completa
+                    offer: finalResult?.offer || {}
                 };
             }
             
@@ -4443,7 +4463,7 @@
                                     ${res.individualResults.map((supply, idx) => `
                                         <div class="bg-white rounded p-2 border border-blue-200">
                                             <div class="flex justify-between items-start mb-1">
-                                                <span class="font-mono text-slate-600">${supply.cups.slice(-12)}</span>
+                                                <span class="font-mono text-slate-600">${supply.cups}</span>
                                                 <span class="font-bold text-green-600">${eur(supply.savings)}</span>
                                             </div>
                                             <div class="text-slate-700">
@@ -4464,7 +4484,7 @@
                                         return `
                                         <div class="bg-white rounded p-2 border border-green-200">
                                             <div class="flex justify-between items-start mb-1">
-                                                <span class="font-mono text-slate-600">${supply.cups.slice(-12)}</span>
+                                                <span class="font-mono text-slate-600">${supply.cups}</span>
                                                 <span class="font-bold text-green-600">${eur(indexedSavings)}</span>
                                             </div>
                                             <div class="text-slate-700">
@@ -6589,10 +6609,13 @@
         
         // --- GENERACIÓN DE PDF CON COMPARACIÓN DUAL (FIJO VS INDEXADO) CON DESARROLLO COMPLETO ---
         
-        async function generatePDF_Dual(resFijo, resIndexed) {
+        async function generatePDF_Dual(resFijo, resIndexed, commercialCode = 'D=00', clientName = '[NOMBRE COMPLETO CLIENTE]', clientPhone = '', clientEmail = '', clientAddress = '') {
             try {
                 console.log('=== generatePDF_Dual INICIADO ===');
                 console.log('resFijo:', resFijo);
+                console.log('commercialCode:', commercialCode);
+                console.log('clientName:', clientName);
+                console.log('clientAddress:', clientAddress);
                 console.log('resFijo tiene powerCosts?:', !!resFijo.powerCosts);
                 console.log('resFijo tiene energyCosts?:', !!resFijo.energyCosts);
                 console.log('resIndexed:', resIndexed);
@@ -6634,9 +6657,13 @@
                 const tariffType = resFijo.originalTariffType || currentTariffType;
                 const config = TARIFF_CONFIG[tariffType] || TARIFF_CONFIG['2.0TD'];
                 
-                const commercialCode = document.getElementById('comercial-code-input').value.trim();
-                const clientName = document.getElementById('client-name-input').value.trim() || '[NOMBRE COMPLETO CLIENTE]';
-                const clientAddress = document.getElementById('client-address-input').value.trim();
+                // Ya no necesitamos capturar desde el DOM, usamos los parámetros de la función
+                console.log('📋 Datos del comercial recibidos como parámetros:');
+                console.log('  - Código comercial:', commercialCode);
+                console.log('  - Nombre cliente:', clientName);
+                console.log('  - 🏠 Dirección:', clientAddress);
+                console.log('  - Teléfono:', clientPhone);
+                console.log('  - Email:', clientEmail);
                 
                 // Colores dinámicos según la marca activa
                 const darkColor = [107, 125, 142];
@@ -6770,6 +6797,17 @@
                 doc.setTextColor(75, 85, 99);
                 doc.text(tr('CLIENTE:') + ' ' + clientName.toUpperCase(), margin, yPos);
                 yPos += 6;
+                
+                // Mostrar dirección si existe
+                if (clientAddress && clientAddress.trim() !== '') {
+                    doc.setFontSize(9);
+                    doc.setTextColor(100, 116, 139);
+                    doc.text('🏠 ' + tr('DIRECCIÓN:') + ' ' + clientAddress, margin, yPos);
+                    yPos += 6;
+                    doc.setTextColor(75, 85, 99);
+                    doc.setFontSize(10);
+                }
+                
                 doc.text('CUPS TOTALES: ' + (resFijo.isMulti ? resFijo.cups : '1'), margin, yPos);
                 yPos += 12;
                 
@@ -7027,9 +7065,14 @@
                     doc.text('PRECIOS APLICADOS:', x + 3, y + 6);
                     y += 10;
                     
-                    // Info de precios (Potencia y Energía)
+                    // Info de precios (Potencia y Energía) - Altura dinámica según períodos
+                    const numPowerPeriods = Math.min(res.powerCosts.length, 6);
+                    const numEnergyPeriods = Math.min(res.energyCosts.length, 6);
+                    const maxPeriods = Math.max(numPowerPeriods, numEnergyPeriods);
+                    const boxHeight = 6 + (maxPeriods * 3.2); // Altura base 6 + 3.2 por cada período (más espacio)
+                    
                     doc.setFillColor(100, 116, 139);
-                    doc.roundedRect(x, y, width, 16, 2, 2, 'F');
+                    doc.roundedRect(x, y, width, boxHeight, 2, 2, 'F');
                     doc.setTextColor(255, 255, 255);
                     doc.setFontSize(6);
                     doc.setFont('helvetica', 'bold');
@@ -7037,12 +7080,14 @@
                     doc.setFont('helvetica', 'normal');
                     doc.setFontSize(5.5);
                     
-                    // Mostrar precios de potencia reales
-                    if (res.powerCosts.length > 0) {
-                        doc.text(`P1: ${num(res.powerCosts[0].priceDay || 0, 6)} €/kW/día`, x + 3, y + 8);
-                    }
-                    if (res.powerCosts.length > 1) {
-                        doc.text(`P2: ${num(res.powerCosts[1].priceDay || 0, 6)} €/kW/día`, x + 3, y + 11);
+                    // Mostrar precios de potencia reales (todos los períodos disponibles)
+                    let potenciaY = y + 8;
+                    const maxPowerPeriodsToShow = Math.min(res.powerCosts.length, 6); // Máximo 6 períodos
+                    for (let i = 0; i < maxPowerPeriodsToShow; i++) {
+                        if (res.powerCosts[i]) {
+                            doc.text(`P${i + 1}: ${num(res.powerCosts[i].priceDay || 0, 6)} €/kW/día`, x + 3, potenciaY);
+                            potenciaY += 3.2;
+                        }
                     }
                     
                     doc.setFont('helvetica', 'bold');
@@ -7051,17 +7096,16 @@
                     doc.setFont('helvetica', 'normal');
                     doc.setFontSize(5.5);
                     
-                    // Mostrar precios de energía reales
-                    if (res.energyCosts.length > 0) {
-                        doc.text(`E1: ${num(res.energyCosts[0].price || 0, 6)} €/kWh`, x + width/2, y + 8);
+                    // Mostrar precios de energía reales (todos los períodos disponibles)
+                    let energiaY = y + 8;
+                    const maxEnergyPeriodsToShow = Math.min(res.energyCosts.length, 6); // Máximo 6 períodos
+                    for (let i = 0; i < maxEnergyPeriodsToShow; i++) {
+                        if (res.energyCosts[i]) {
+                            doc.text(`E${i + 1}: ${num(res.energyCosts[i].price || 0, 6)} €/kWh`, x + width/2, energiaY);
+                            energiaY += 3.2;
+                        }
                     }
-                    if (res.energyCosts.length > 1) {
-                        doc.text(`E2: ${num(res.energyCosts[1].price || 0, 6)} €/kWh`, x + width/2, y + 11);
-                    }
-                    if (res.energyCosts.length > 2) {
-                        doc.text(`E3: ${num(res.energyCosts[2].price || 0, 6)} €/kWh`, x + width/2, y + 14);
-                    }
-                    y += 20;
+                    y += boxHeight + 4;
                     
                     // === SECCIÓN POTENCIA ===
                     doc.setFillColor(100, 116, 139);
@@ -7121,7 +7165,7 @@
                     doc.setTextColor(255, 255, 255);
                     doc.setFontSize(8);
                     doc.setFont('helvetica', 'bold');
-                    doc.text(`TOTAL (${res.dias_facturados || 0} DÍAS)`, x + 3, y + 6);
+                    doc.text(`${tr('TOTAL')} (${res.dias_facturados || 0} ${tr('DÍAS')})`, x + 3, y + 6);
                     doc.text(eur(res.totalPeriod || res.importe_total || 0), x + width - 3, y + 6, { align: 'right' });
                     y += 12;
                     
@@ -7243,10 +7287,13 @@
         }
 
 
-        async function generateMultiPDF_Dual(res) {
+        async function generateMultiPDF_Dual(res, commercialCode = 'D=00', clientName = '[NOMBRE COMPLETO CLIENTE]', clientPhone = '', clientEmail = '', clientAddress = '') {
             try {
                 console.log('=== generateMultiPDF_Dual INICIADO ===');
                 console.log('res recibido:', res);
+                console.log('commercialCode:', commercialCode);
+                console.log('clientName:', clientName);
+                console.log('clientAddress:', clientAddress);
                 console.log('res.individualResults:', res.individualResults);
                 
                 if (res.individualResults && res.individualResults.length > 0) {
@@ -7687,27 +7734,82 @@
                 
                 yPos = maxY + 15;
                 
-                // Nota
-                doc.setFillColor(255, 251, 235);
-                doc.setDrawColor(245, 158, 11);
-                doc.setLineWidth(0.3);
-                doc.roundedRect(margin, yPos, contentWidth, 18, 1, 1, 'FD');
-                
-                doc.setTextColor(146, 64, 14);
-                doc.setFontSize(7);
+                // === TABLA RESUMEN DE SUMINISTROS ===
+                // Título resumen (verde)
+                doc.setFillColor(...greenColor);
+                doc.roundedRect(margin, yPos, contentWidth, 10, 3, 3, 'F');
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(11);
                 doc.setFont('helvetica', 'bold');
-                doc.text('⚠️ IMPORTANTE:', margin + 2, yPos + 5);
+                const resumenText = `${tr('RESUMEN DE')} ${res.individualResults.length} ${tr('SUMINISTROS')}`;
+                doc.text(resumenText, margin + 3, yPos + 6.5);
+                yPos += 14;
+                
+                // Cabecera tabla (gris oscuro con texto blanco)
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(8);
+                doc.setFont('helvetica', 'bold');
+                doc.setFillColor(...darkColor);
+                doc.roundedRect(margin, yPos, contentWidth, 7, 2, 2, 'F');
+                doc.text('Nº', margin + 2, yPos + 5);
+                doc.text(tr('CUPS / DIRECCIÓN'), margin + 12, yPos + 5);
+                doc.text('TIPO', margin + 95, yPos + 5);
+                doc.text('DÍAS', margin + 115, yPos + 5);
+                doc.text('AHORRO', pageWidth - margin - 28, yPos + 5);
+                yPos += 7;
+                
+                // Filas de suministros
                 doc.setFont('helvetica', 'normal');
-                doc.setFontSize(6.5);
-                const noteText = doc.splitTextToSize(
-                    'A continuación encontrará el desarrollo detallado de cálculos para cada suministro, mostrando el desglose completo de costes tanto para tarifas fijas como indexadas.',
-                    contentWidth - 4
-                );
-                let noteY = yPos + 10;
-                noteText.forEach(line => {
-                    doc.text(line, margin + 2, noteY);
-                    noteY += 3;
+                res.individualResults.forEach((supply, idx) => {
+                    // Verificar si necesitamos nueva página
+                    if (yPos > 270) {
+                        doc.addPage();
+                        yPos = 20;
+                    }
+                    
+                    // Fondo alternado - altura aumentada para incluir dirección
+                    const rowHeight = supply.supplyAddress ? 11 : 7;
+                    if (idx % 2 === 0) {
+                        doc.setFillColor(248, 250, 252); // Azul muy claro
+                        doc.rect(margin, yPos, contentWidth, rowHeight, 'F');
+                    }
+                    
+                    doc.setTextColor(0, 0, 0);
+                    doc.setFontSize(8);
+                    doc.text(`[${idx + 1}]`, margin + 2, yPos + 4.5);
+                    
+                    // CUPS (primera línea)
+                    doc.setFontSize(7);
+                    doc.text(supply.cups, margin + 12, yPos + 4.5);
+                    
+                    // DIRECCIÓN (segunda línea, si existe)
+                    if (supply.supplyAddress && supply.supplyAddress !== 'No especificada') {
+                        doc.setFontSize(6);
+                        doc.setTextColor(100, 116, 139); // Gris para la dirección
+                        const direccionCorta = supply.supplyAddress.length > 35 
+                            ? supply.supplyAddress.substring(0, 32) + '...' 
+                            : supply.supplyAddress;
+                        doc.text(direccionCorta, margin + 12, yPos + 8.5);
+                        doc.setTextColor(0, 0, 0);
+                    }
+                    
+                    doc.setFontSize(8);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text(supply.originalTariffType, margin + 95, yPos + 4.5);
+                    doc.setFont('helvetica', 'normal');
+                    doc.text(`${supply.dias_facturados}`, margin + 118, yPos + 4.5, { align: 'center' });
+                    
+                    // Calcular ahorro (fijo vs indexado)
+                    const ahorroSupply = supply.savings || 0;
+                    const savSupply = ahorroSupply < 0 ? '0,00 €' : eur(ahorroSupply);
+                    const colorSupply = ahorroSupply < 0 ? [150, 150, 150] : greenColor;
+                    doc.setTextColor(...colorSupply);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text(savSupply, pageWidth - margin - 2, yPos + 4.5, { align: 'right' });
+                    yPos += rowHeight;
                 });
+                
+                yPos += 10;
                 
                 // === PÁGINAS 2-N: DESARROLLO DETALLADO DE CADA CUPS ===
                 
@@ -7739,7 +7841,7 @@
                     doc.setTextColor(255, 255, 255);
                     doc.setFontSize(7);
                     doc.setFont('helvetica', 'bold');
-                    doc.text(`[${supply.cups.slice(-12)}]`, x + 3, y + 4);
+                    doc.text(`[${supply.cups}]`, x + 3, y + 4);
                     doc.text(`Tipo: ${tariffType}`, x + width - 3, y + 4, { align: 'right' });
                     doc.text(`Días: ${resultado.dias_facturados || 0}`, x + width - 3, y + 8, { align: 'right' });
                     
@@ -7762,9 +7864,14 @@
                     doc.text('PRECIOS APLICADOS:', x + 3, y + 6);
                     y += 10;
                     
-                    // Info de precios (Potencia y Energía)
+                    // Info de precios (Potencia y Energía) - Altura dinámica según períodos
+                    const numPowerPeriods = Math.min(resultado.powerCosts.length, 6);
+                    const numEnergyPeriods = Math.min(resultado.energyCosts.length, 6);
+                    const maxPeriods = Math.max(numPowerPeriods, numEnergyPeriods);
+                    const boxHeight = 6 + (maxPeriods * 3.2); // Altura base 6 + 3.2 por cada período (más espacio)
+                    
                     doc.setFillColor(...headerMedColor);
-                    doc.roundedRect(x, y, width, 16, 2, 2, 'F');
+                    doc.roundedRect(x, y, width, boxHeight, 2, 2, 'F');
                     doc.setTextColor(255, 255, 255);
                     doc.setFontSize(6);
                     doc.setFont('helvetica', 'bold');
@@ -7772,12 +7879,14 @@
                     doc.setFont('helvetica', 'normal');
                     doc.setFontSize(5.5);
                     
-                    // Mostrar precios de potencia reales
-                    if (resultado.powerCosts.length > 0) {
-                        doc.text(`P1: ${num(resultado.powerCosts[0].priceDay || 0, 6)} €/kW/día`, x + 3, y + 8);
-                    }
-                    if (resultado.powerCosts.length > 1) {
-                        doc.text(`P2: ${num(resultado.powerCosts[1].priceDay || 0, 6)} €/kW/día`, x + 3, y + 11);
+                    // Mostrar precios de potencia reales (todos los períodos disponibles)
+                    let potenciaY = y + 8;
+                    const maxPowerPeriodsToShow = Math.min(resultado.powerCosts.length, 6); // Máximo 6 períodos
+                    for (let i = 0; i < maxPowerPeriodsToShow; i++) {
+                        if (resultado.powerCosts[i]) {
+                            doc.text(`P${i + 1}: ${num(resultado.powerCosts[i].priceDay || 0, 6)} €/kW/día`, x + 3, potenciaY);
+                            potenciaY += 3.2;
+                        }
                     }
                     
                     doc.setFont('helvetica', 'bold');
@@ -7786,17 +7895,16 @@
                     doc.setFont('helvetica', 'normal');
                     doc.setFontSize(5.5);
                     
-                    // Mostrar precios de energía reales
-                    if (resultado.energyCosts.length > 0) {
-                        doc.text(`E1: ${num(resultado.energyCosts[0].price || 0, 6)} €/kWh`, x + width/2, y + 8);
+                    // Mostrar precios de energía reales (todos los períodos disponibles)
+                    let energiaY = y + 8;
+                    const maxEnergyPeriodsToShow = Math.min(resultado.energyCosts.length, 6); // Máximo 6 períodos
+                    for (let i = 0; i < maxEnergyPeriodsToShow; i++) {
+                        if (resultado.energyCosts[i]) {
+                            doc.text(`E${i + 1}: ${num(resultado.energyCosts[i].price || 0, 6)} €/kWh`, x + width/2, energiaY);
+                            energiaY += 3.2;
+                        }
                     }
-                    if (resultado.energyCosts.length > 1) {
-                        doc.text(`E2: ${num(resultado.energyCosts[1].price || 0, 6)} €/kWh`, x + width/2, y + 11);
-                    }
-                    if (resultado.energyCosts.length > 2) {
-                        doc.text(`E3: ${num(resultado.energyCosts[2].price || 0, 6)} €/kWh`, x + width/2, y + 14);
-                    }
-                    y += 20;
+                    y += boxHeight + 4;
                     
                     // === SECCIÓN POTENCIA ===
                     doc.setFillColor(...headerMedColor);
@@ -7856,7 +7964,7 @@
                     doc.setTextColor(255, 255, 255);
                     doc.setFontSize(8);
                     doc.setFont('helvetica', 'bold');
-                    doc.text(`TOTAL (${resultado.dias_facturados || 0} DÍAS)`, x + 3, y + 6);
+                    doc.text(`${tr('TOTAL')} (${resultado.dias_facturados || 0} ${tr('DÍAS')})`, x + 3, y + 6);
                     doc.text(eur(resultado.totalPeriod || 0), x + width - 3, y + 6, { align: 'right' });
                     y += 12;
                     
@@ -7892,7 +8000,7 @@
                     doc.setTextColor(255, 255, 255);
                     doc.setFontSize(10);
                     doc.setFont('helvetica', 'bold');
-                    doc.text(`DESARROLLO DETALLADO - SUMINISTRO ${idx + 1} DE ${res.individualResults.length}`, pageWidth / 2, yPos + 8, { align: 'center' });
+                    doc.text(`${tr('DESARROLLO DETALLADO - SUMINISTRO')} ${idx + 1} ${tr('DE')} ${res.individualResults.length}`, pageWidth / 2, yPos + 8, { align: 'center' });
                     
                     yPos += headerHeight + 4;
                     
@@ -7935,11 +8043,11 @@
                 doc.roundedRect(leftX, yPos, colWidth, 8, 1, 1, 'F');
                 doc.setTextColor(255, 255, 255);
                 doc.setFontSize(8);
-                doc.text('TARIFAS FIJAS', leftX + colWidth / 2, yPos + 5.5, { align: 'center' });
+                doc.text(tr('TARIFAS FIJAS'), leftX + colWidth / 2, yPos + 5.5, { align: 'center' });
                 
                 doc.setFillColor(...headerBgColor);
                 doc.roundedRect(rightX, yPos, colWidth, 8, 1, 1, 'F');
-                doc.text('TARIFAS INDEXADAS', rightX + colWidth / 2, yPos + 5.5, { align: 'center' });
+                doc.text(tr('TARIFAS INDEXADAS'), rightX + colWidth / 2, yPos + 5.5, { align: 'center' });
                 yPos += 12;
                 
                 // Listar cada suministro
@@ -7953,7 +8061,7 @@
                     doc.setTextColor(0, 0, 0);
                     doc.setFontSize(6.5);
                     doc.setFont('helvetica', 'bold');
-                    doc.text(supply.cups.slice(-12), leftX + 2, yPos + 4);
+                    doc.text(supply.cups, leftX + 2, yPos + 4);
                     doc.setTextColor(22, 163, 74);
                     doc.setFontSize(7);
                     doc.text(eur(supply.savings), leftX + colWidth - 2, yPos + 4, { align: 'right' });
@@ -7969,7 +8077,7 @@
                     doc.setTextColor(0, 0, 0);
                     doc.setFontSize(6.5);
                     doc.setFont('helvetica', 'bold');
-                    doc.text(supply.cups.slice(-12), rightX + 2, yPos + 4);
+                    doc.text(supply.cups, rightX + 2, yPos + 4);
                     const savingsIdx = supply.indexedComparison ? supply.indexedComparison.savings : 0;
                     doc.setTextColor(22, 163, 74);
                     doc.setFontSize(7);
@@ -8017,7 +8125,7 @@
                 doc.setTextColor(0, 0, 0);
                 doc.setFontSize(11);
                 doc.setFont('helvetica', 'bold');
-                doc.text('CUAL ES LA DIFERENCIA?', pageWidth / 2, yPos + 8, { align: 'center' });
+                doc.text(tr('CUAL ES LA DIFERENCIA?'), pageWidth / 2, yPos + 8, { align: 'center' });
                 
                 yPos += 15;
                 
@@ -8026,31 +8134,36 @@
                 doc.setFontSize(9);
                 doc.setTextColor(...blueColor);
                 doc.setFont('helvetica', 'bold');
-                doc.text('POR QUE TARIFA FIJA?', leftX + 2, leftColY);
+                doc.text(tr('POR QUE TARIFA FIJA?'), leftX + 2, leftColY);
                 leftColY += 6;
                 
                 doc.setTextColor(0, 0, 0);
                 doc.setFontSize(7);
                 doc.setFont('helvetica', 'normal');
+                
+                // Textos explicativos traducibles - divididos para caber en el PDF
+                const fijaText1 = tr('Implica un precio fijo por los kilovatios que consumes (kWh).');
+                const fijaText2 = tr('El precio se mantiene estable, independientemente de cómo se comporten los precios en el mercado eléctrico.');
+                const fijaText3 = tr('Cuando el precio del mercado está alto, el cliente está protegido frente a sobresaltos.');
+                const fijaText4 = tr('No tendrás que estar pendiente de las variaciones del mercado y podrás seguir usando la electricidad como siempre.');
+                
+                // Dividir textos en múltiples líneas para que quepan
                 const fijaExplText = [
-                    '• Implica un precio fijo por los kilovatios que',
-                    '  consumes (kWh).',
+                    `• ${doc.splitTextToSize(fijaText1, colWidth - 6).join('\n  ')}`,
                     '',
-                    '• El precio se mantiene estable,',
-                    '  independientemente de cómo se comporten los',
-                    '  precios en el mercado eléctrico.',
+                    `• ${doc.splitTextToSize(fijaText2, colWidth - 6).join('\n  ')}`,
                     '',
-                    '• Cuando el precio del mercado está alto, el',
-                    '  cliente está protegido frente a sobresaltos.',
+                    `• ${doc.splitTextToSize(fijaText3, colWidth - 6).join('\n  ')}`,
                     '',
-                    '• No tendrás que estar pendiente de las',
-                    '  variaciones del mercado y podrás seguir',
-                    '  usando la electricidad como siempre.'
+                    `• ${doc.splitTextToSize(fijaText4, colWidth - 6).join('\n  ')}`
                 ];
                 
                 fijaExplText.forEach(line => {
-                    doc.text(line, leftX + 2, leftColY, { maxWidth: colWidth - 4 });
-                    leftColY += 3.5;
+                    const lines = line.split('\n');
+                    lines.forEach(l => {
+                        doc.text(l, leftX + 2, leftColY, { maxWidth: colWidth - 4 });
+                        leftColY += 3.5;
+                    });
                 });
                 
                 // Columna derecha
@@ -8058,32 +8171,35 @@
                 doc.setFontSize(9);
                 doc.setFont('helvetica', 'bold');
                 doc.setTextColor(...greenColor);
-                doc.text('POR QUE TARIFA INDEXADA?', rightX + 2, rightColY);
+                doc.text(tr('POR QUE TARIFA INDEXADA?'), rightX + 2, rightColY);
                 rightColY += 6;
                 
                 doc.setTextColor(0, 0, 0);
                 doc.setFontSize(7);
                 doc.setFont('helvetica', 'normal');
+                
+                // Textos explicativos traducibles - divididos para caber en el PDF
+                const indexText1 = tr('Implica un precio variable por los kilovatios que consumes (kWh) cada mes.');
+                const indexText2 = tr('Es la tarifa más justa, ya que pagas el coste real de la energía mes a mes.');
+                const indexText3 = tr('Al contratarla, el cliente evita pagar márgenes adicionales cuando el precio de la electricidad es más barato.');
+                const indexText4 = tr('A largo plazo, con un indexado 100% funcional, se puede obtener un ahorro aproximado de hasta un 20% en épocas de mejor precio.');
+                
                 const indexExplText = [
-                    '• Implica un precio variable por los kilovatios',
-                    '  que consumes (kWh) cada mes.',
+                    `• ${doc.splitTextToSize(indexText1, colWidth - 6).join('\n  ')}`,
                     '',
-                    '• Es la tarifa más justa, ya que pagas el coste',
-                    '  real de la energía mes a mes.',
+                    `• ${doc.splitTextToSize(indexText2, colWidth - 6).join('\n  ')}`,
                     '',
-                    '• Al contratarla, el cliente evita pagar',
-                    '  márgenes adicionales cuando el precio de la',
-                    '  electricidad es más barato.',
+                    `• ${doc.splitTextToSize(indexText3, colWidth - 6).join('\n  ')}`,
                     '',
-                    '• A largo plazo, con un indexado 100%',
-                    '  funcional, se puede obtener un ahorro',
-                    '  aproximado de hasta un 20% en épocas de',
-                    '  mejor precio.'
+                    `• ${doc.splitTextToSize(indexText4, colWidth - 6).join('\n  ')}`
                 ];
                 
                 indexExplText.forEach(line => {
-                    doc.text(line, rightX + 2, rightColY, { maxWidth: colWidth - 4 });
-                    rightColY += 3.5;
+                    const lines = line.split('\n');
+                    lines.forEach(l => {
+                        doc.text(l, rightX + 2, rightColY, { maxWidth: colWidth - 4 });
+                        rightColY += 3.5;
+                    });
                 });
                 
                 // Guardar
@@ -9226,7 +9342,7 @@ Destinatarios: F.araujo@drk.es, rguerra@drk.es, l.grande@drk.es
                         doc.setTextColor(255, 255, 255);
                         doc.setFontSize(7);
                         doc.setFont('helvetica', 'bold');
-                        doc.text('[ES]', x + 3, y + 5);
+                        doc.text('[' + (res.cups || 'ES') + ']', x + 3, y + 5);
                         doc.text(`Tipo: ${res.tariffType}`, x + colWidth - 3, y + 5, { align: 'right' });
                         doc.setFont('helvetica', 'normal');
                         doc.text(`Días: ${res.dias_facturados || 30}`, x + colWidth - 3, y + 9, { align: 'right' });
@@ -9243,9 +9359,14 @@ Destinatarios: F.araujo@drk.es, rguerra@drk.es, l.grande@drk.es
                         doc.text(tr('PRECIOS APLICADOS:'), x + 3, y + 4);
                         y += 8;
                         
-                        // Tabla de precios (simplificada)
+                        // Tabla de precios - Altura dinámica según períodos
+                        const numPowerPeriods = Math.min(res.powerCosts.length, 6);
+                        const numEnergyPeriods = Math.min(res.energyCosts.length, 6);
+                        const maxPeriods = Math.max(numPowerPeriods, numEnergyPeriods);
+                        const priceBoxHeight = 8 + (maxPeriods * 3.5); // Altura base 8 + 3.5 por cada período (aún más espacio)
+                        
                         doc.setFillColor(100, 100, 110);
-                        doc.roundedRect(x, y, colWidth, 20, 1, 1, 'F');
+                        doc.roundedRect(x, y, colWidth, priceBoxHeight, 1, 1, 'F');
                         doc.setTextColor(255, 255, 255);
                         doc.setFontSize(6);
                         doc.setFont('helvetica', 'bold');
@@ -9254,17 +9375,23 @@ Destinatarios: F.araujo@drk.es, rguerra@drk.es, l.grande@drk.es
                         
                         doc.setFont('helvetica', 'normal');
                         let priceY = y + 8;
-                        res.powerCosts.slice(0, 3).forEach((p, idx) => {
+                        // Mostrar todos los períodos de potencia disponibles (hasta 6)
+                        const powerPeriodsToShow = Math.min(res.powerCosts.length, 6);
+                        for (let i = 0; i < powerPeriodsToShow; i++) {
+                            const p = res.powerCosts[i];
                             doc.text(`P${p.period}: ${num(p.priceDay, 6)} €/kW/día`, x + 3, priceY, { maxWidth: colWidth / 2 - 5 });
-                            priceY += 3;
-                        });
+                            priceY += 3.5;
+                        }
                         
                         priceY = y + 8;
-                        res.energyCosts.slice(0, 3).forEach((e, idx) => {
+                        // Mostrar todos los períodos de energía disponibles (hasta 6)
+                        const energyPeriodsToShow = Math.min(res.energyCosts.length, 6);
+                        for (let i = 0; i < energyPeriodsToShow; i++) {
+                            const e = res.energyCosts[i];
                             doc.text(`E${e.period}: ${num(e.price, 5)} €/kWh`, x + colWidth / 2 + 2, priceY, { maxWidth: colWidth / 2 - 5 });
-                            priceY += 3;
-                        });
-                        y += 22;
+                            priceY += 3.5;
+                        }
+                        y += priceBoxHeight + 2;
                         
                         // POTENCIA
                         doc.setFillColor(250, 250, 250);
@@ -9359,7 +9486,7 @@ Destinatarios: F.araujo@drk.es, rguerra@drk.es, l.grande@drk.es
                     doc.setTextColor(255, 255, 255);
                     doc.setFontSize(7);
                     doc.setFont('helvetica', 'bold');
-                    doc.text('[ES]', margin + 3, y + 5);
+                    doc.text('[' + (resActual.cups || 'ES') + ']', margin + 3, y + 5);
                     doc.text(`Tipo: ${resActual.tariffType}`, pageWidth - margin - 3, y + 5, { align: 'right' });
                     doc.setFont('helvetica', 'normal');
                     doc.text(`Días: ${resActual.dias_facturados || 30}`, pageWidth - margin - 3, y + 9, { align: 'right' });
@@ -9701,11 +9828,11 @@ Destinatarios: F.araujo@drk.es, rguerra@drk.es, l.grande@drk.es
                 if (lastComparisonResult.isMultiCups) {
                     // MULTICUPS con índice
                     console.log('✅ Generando PDF MULTICUPS DUAL');
-                    await generateMultiPDF_Dual(lastComparisonResult);
+                    await generateMultiPDF_Dual(lastComparisonResult, commercialCode, clientName, clientPhone, clientEmail, clientAddress);
                 } else {
                     // Individual con índice
                     console.log('✅ Generando PDF INDIVIDUAL DUAL');
-                    await generatePDF_Dual(lastComparisonResult, lastIndexedResult);
+                    await generatePDF_Dual(lastComparisonResult, lastIndexedResult, commercialCode, clientName, clientPhone, clientEmail, clientAddress);
                 }
                 
                 // Cerrar modal
@@ -10124,7 +10251,7 @@ Destinatarios: F.araujo@drk.es, rguerra@drk.es, l.grande@drk.es
                         
                         // CUPS (primera línea)
                         doc.setFontSize(7);
-                        doc.text(supply.cups.substring(0, 18) + '...', margin + 12, yPos + 4.5);
+                        doc.text(supply.cups, margin + 12, yPos + 4.5);
                         
                         // DIRECCIÓN (segunda línea, si existe)
                         if (supply.supplyAddress && supply.supplyAddress !== 'No especificada') {
@@ -10217,9 +10344,14 @@ Destinatarios: F.araujo@drk.es, rguerra@drk.es, l.grande@drk.es
                         doc.text('PRECIOS APLICADOS:', x + 3, y + 6);
                         y += 10;
                         
-                        // Info de precios (Potencia y Energía)
+                        // Info de precios (Potencia y Energía) - Altura dinámica según períodos
+                        const numPowerPeriods = Math.min(res.powerCosts.length, 6);
+                        const numEnergyPeriods = Math.min(res.energyCosts.length, 6);
+                        const maxPeriods = Math.max(numPowerPeriods, numEnergyPeriods);
+                        const boxHeight = 6 + (maxPeriods * 3.2); // Altura base 6 + 3.2 por cada período (más espacio)
+                        
                         doc.setFillColor(100, 116, 139);
-                        doc.roundedRect(x, y, width, 16, 2, 2, 'F');
+                        doc.roundedRect(x, y, width, boxHeight, 2, 2, 'F');
                         doc.setTextColor(255, 255, 255);
                         doc.setFontSize(6);
                         doc.setFont('helvetica', 'bold');
@@ -10227,12 +10359,14 @@ Destinatarios: F.araujo@drk.es, rguerra@drk.es, l.grande@drk.es
                         doc.setFont('helvetica', 'normal');
                         doc.setFontSize(5.5);
                         
-                        // Mostrar precios de potencia reales
-                        if (res.powerCosts.length > 0) {
-                            doc.text(`P1: ${num(res.powerCosts[0].priceDay || 0, 6)} €/kW/día`, x + 3, y + 8);
-                        }
-                        if (res.powerCosts.length > 1) {
-                            doc.text(`P2: ${num(res.powerCosts[1].priceDay || 0, 6)} €/kW/día`, x + 3, y + 11);
+                        // Mostrar precios de potencia reales (todos los períodos disponibles)
+                        let potenciaY = y + 8;
+                        const maxPowerPeriodsToShow = Math.min(res.powerCosts.length, 6); // Máximo 6 períodos
+                        for (let i = 0; i < maxPowerPeriodsToShow; i++) {
+                            if (res.powerCosts[i]) {
+                                doc.text(`P${i + 1}: ${num(res.powerCosts[i].priceDay || 0, 6)} €/kW/día`, x + 3, potenciaY);
+                                potenciaY += 3.2;
+                            }
                         }
                         
                         doc.setFont('helvetica', 'bold');
@@ -10241,17 +10375,16 @@ Destinatarios: F.araujo@drk.es, rguerra@drk.es, l.grande@drk.es
                         doc.setFont('helvetica', 'normal');
                         doc.setFontSize(5.5);
                         
-                        // Mostrar precios de energía reales
-                        if (res.energyCosts.length > 0) {
-                            doc.text(`E1: ${num(res.energyCosts[0].price || 0, 6)} €/kWh`, x + width/2, y + 8);
+                        // Mostrar precios de energía reales (todos los períodos disponibles)
+                        let energiaY = y + 8;
+                        const maxEnergyPeriodsToShow = Math.min(res.energyCosts.length, 6); // Máximo 6 períodos
+                        for (let i = 0; i < maxEnergyPeriodsToShow; i++) {
+                            if (res.energyCosts[i]) {
+                                doc.text(`E${i + 1}: ${num(res.energyCosts[i].price || 0, 6)} €/kWh`, x + width/2, energiaY);
+                                energiaY += 3.2;
+                            }
                         }
-                        if (res.energyCosts.length > 1) {
-                            doc.text(`E2: ${num(res.energyCosts[1].price || 0, 6)} €/kWh`, x + width/2, y + 11);
-                        }
-                        if (res.energyCosts.length > 2) {
-                            doc.text(`E3: ${num(res.energyCosts[2].price || 0, 6)} €/kWh`, x + width/2, y + 14);
-                        }
-                        y += 20;
+                        y += boxHeight + 4;
                         
                         // === SECCIÓN POTENCIA ===
                         doc.setFillColor(100, 116, 139);
@@ -10368,7 +10501,7 @@ Destinatarios: F.araujo@drk.es, rguerra@drk.es, l.grande@drk.es
                             doc.setLineWidth(2);
                             doc.roundedRect(margin, yPos, contentWidth, 12, 3, 3, 'FD');
                             doc.setTextColor(255, 255, 255);
-                            doc.setFontSize(9);
+                            doc.setFontSize(7);
                             doc.setFont('helvetica', 'bold');
                             doc.text(`[${idx + 1}] ${supply.cups}`, margin + 3, yPos + 5);
                             doc.setFontSize(7);
@@ -13420,10 +13553,16 @@ Destinatarios: F.araujo@drk.es, rguerra@drk.es, l.grande@drk.es
             // Ocultar el selector de tarifa al abrir el modal (se mostrará solo si es necesario)
             document.getElementById('best-option-tariff-selector')?.classList.add('hidden');
             
-            // NUEVO: Si hay comparativo de potencias optimizadas activo, OCULTAR el checkbox de Fijo & Indexado
+            // NUEVO: Si hay comparativo de potencias optimizadas activo O es modo DUAL, OCULTAR el checkbox de Fijo & Indexado
             const checkboxContainer = document.getElementById('powercup-indexed-comparison-checkbox');
-            if (window.optimizedPowerEnabled) {
-                console.log('⚡ Optimización de potencias activa - Ocultando checkbox Fijo & Indexado');
+            const isDualMode = window.dualMode === true;
+            
+            if (window.optimizedPowerEnabled || isDualMode) {
+                if (isDualMode) {
+                    console.log('🔄 Modo DUAL activo - Ocultando checkbox Fijo & Indexado');
+                } else {
+                    console.log('⚡ Optimización de potencias activa - Ocultando checkbox Fijo & Indexado');
+                }
                 checkboxContainer?.classList.add('hidden');
                 // Asegurar que el checkbox esté desmarcado
                 const indexedCheckbox = document.getElementById('compare-with-indexed');
@@ -13432,7 +13571,7 @@ Destinatarios: F.araujo@drk.es, rguerra@drk.es, l.grande@drk.es
                     compareWithIndexed = false;
                 }
             } else {
-                // IMPORTANTE: El checkbox de comparación visible normalmente (para DRK y POWER CUP)
+                // IMPORTANTE: El checkbox de comparación visible solo si NO es DUAL y NO hay optimización
                 checkboxContainer?.classList.remove('hidden');
             }
             
@@ -13517,6 +13656,13 @@ Destinatarios: F.araujo@drk.es, rguerra@drk.es, l.grande@drk.es
             // Detectar contexto
             const isDrkMode = comparisonMode !== 'overall_best';
             const isIndividual = currentTariffType !== 'MULTICUPS';
+            const isDualMode = window.dualMode === true;
+            
+            // IMPORTANTE: En modo DUAL, siempre ocultar el checkbox
+            if (isDualMode) {
+                console.log('🔄 Modo DUAL: Ocultando checkbox de comparación indexada');
+                if (checkboxContainer) checkboxContainer.classList.add('hidden');
+            }
             
             if (isDrkMode) {
                 // DRK (Individual o MULTICUPS)
@@ -13525,7 +13671,8 @@ Destinatarios: F.araujo@drk.es, rguerra@drk.es, l.grande@drk.es
                     // CHECK MARCADO: Comparar automáticamente FIJO vs INDEXADO (NO mostrar selector)
                     console.log('DRK con CHECK marcado: Comparando automáticamente FIJO vs INDEXADO');
                     selectorDiv?.classList.add('hidden');
-                    if (checkboxContainer) checkboxContainer.classList.remove('hidden');
+                    // Solo mostrar checkbox si NO es modo DUAL
+                    if (checkboxContainer && !isDualMode) checkboxContainer.classList.remove('hidden');
                     selectBestOptionDirect(); // Ejecutar directamente
                 } else {
                     // CHECK NO MARCADO: Mostrar selector para elegir FIJA o INDEXADA
@@ -17181,8 +17328,8 @@ Destinatarios: F.araujo@drk.es, rguerra@drk.es, l.grande@drk.es
             
             hideAllScreens();
             document.getElementById('screen-inicio').classList.add('active');
-            // Mantener oculto el modo de comparación en versión DRK Only
-            document.getElementById('modo-comparacion-section').style.display = 'none';
+            // Mostrar el modo de comparación
+            document.getElementById('modo-comparacion-section').style.display = 'block';
         }
 
         function goToElectricidad() {
@@ -18496,7 +18643,7 @@ ${clientName}
         <!-- DATOS CLIENTE -->
         <div style="padding:15px 30px;background:#f8f9fa">
             <p style="margin:0 0 5px 0;font-size:11px;color:#1e293b"><strong>${tr("CLIENTE:")}</strong> ${clientName}</p>
-            <p style="margin:0 0 5px 0;font-size:11px;color:#1e293b"><strong>${tr("CUPS:")}</strong> ${dualSupplies[0].cups}</p>
+            <p style="margin:0 0 5px 0;font-size:11px;color:#1e293b"><strong>${tr("CUPS:")}</strong> ${dualSupplies && dualSupplies[0] && dualSupplies[0].cups ? dualSupplies[0].cups : 'N/A'}</p>
             <p style="margin:0;font-size:11px;color:#1e293b"><strong>${tr("COMERCIAL:")}</strong> ${comercialCode}</p>
         </div>
         
@@ -18527,7 +18674,7 @@ ${clientName}
                     return `
                     <tr style="border-bottom:1px solid #f1f5f9">
                         <td style="padding:12px 8px;font-size:11px;color:#1e293b;font-weight:bold">${i+1}</td>
-                        <td style="padding:12px 8px;font-size:9px;color:#64748b">${s.cups.substring(0,17)}...</td>
+                        <td style="padding:12px 8px;font-size:9px;color:#64748b">${s.cups}</td>
                         <td style="padding:12px 8px;font-size:10px;color:#1e293b;text-align:center">${emoji} ${tipo}</td>
                         <td style="padding:12px 8px;font-size:11px;color:#1e293b;text-align:center;font-weight:bold">${s.tariff}</td>
                         <td style="padding:12px 8px;font-size:12px;color:${ahorro > 0 ? '#22c55e' : '#9ca3af'};text-align:right;font-weight:bold">${ahorro.toFixed(2)} €</td>
@@ -18603,7 +18750,7 @@ ${clientName}
                 
                 return `
                 <div style="margin:15px 30px;background:${primaryColor};padding:12px;border-radius:5px">
-                    <p style="margin:0 0 5px 0;font-size:11px;color:white;font-weight:bold">[${i+1}] ${s.cups.substring(0,25)}...</p>
+                    <p style="margin:0 0 5px 0;font-size:11px;color:white;font-weight:bold">[${i+1}] ${s.cups}</p>
                     <p style="margin:0;font-size:10px;color:white">${tr('Tipo:')}: ${s.tariff} | ${tr('Días:')}: ${dias} ${tr('días')} | CUPS: [${i+1}]</p>
                     <p style="margin:5px 0 0 0;font-size:10px;color:white"><strong>${tr('TARIFA:')}</strong> ${tarifaCompleta}</p>
                 </div>
@@ -19139,9 +19286,11 @@ ${clientName}
                 doc.setFont('helvetica', 'normal');
                 doc.text(tr('CLIENTE: ') + clientName, margin + 5, yPos + 20);
                 
-                // CUPS del primer suministro
-                if (dualSupplies && dualSupplies.length > 0) {
-                    doc.text(tr('CUPS: ') + (dualSupplies[0].cups || 'N/A'), margin + 5, yPos + 25);
+                // CUPS del primer suministro (usar de dualSupplies si existe)
+                if (dualSupplies && dualSupplies.length > 0 && dualSupplies[0].cups) {
+                    doc.text(tr('CUPS: ') + dualSupplies[0].cups, margin + 5, yPos + 25);
+                } else {
+                    doc.text(tr('CUPS: ') + 'N/A', margin + 5, yPos + 25);
                 }
                 
                 // Comercial en caja destacada
@@ -19262,7 +19411,7 @@ ${clientName}
                     doc.text(String(idx + 1), margin + 5, yPos + 3.5);
                     
                     // CUPS (primera línea)
-                    const cupsShort = supply.cups && supply.cups.length > 22 ? supply.cups.substring(0, 20) + '...' : (supply.cups || 'N/A');
+                    const cupsShort = supply.cups || 'N/A';
                     doc.text(cupsShort, margin + 15, yPos + 3.5);
                     
                     // DIRECCIÓN (segunda línea, si existe)
@@ -19460,7 +19609,7 @@ ${clientName}
                     doc.setTextColor(255, 255, 255);
                     doc.setFontSize(10);
                     doc.setFont('helvetica', 'bold');
-                    const cupsDisplay = supply.cups && supply.cups.length > 30 ? supply.cups.substring(0, 28) + '...' : (supply.cups || 'N/A');
+                    const cupsDisplay = supply.cups || 'N/A';
                     doc.text(`[${idx + 1}] ${cupsDisplay}`, margin + 3, yPos + 6);
                     
                     doc.setFontSize(8);
@@ -20449,6 +20598,18 @@ ${clientName}
                 window.checkDualMode();
             }
             
+            // NUEVO: Ocultar checkbox de comparación indexada si está en modo DUAL
+            const gasIndexedSection = document.getElementById('gas-indexed-comparison-section');
+            if (window.dualMode === true && gasIndexedSection) {
+                console.log('🔄 Modo DUAL en Gas: Ocultando checkbox de comparación indexada');
+                gasIndexedSection.classList.add('hidden');
+                // Asegurar que el checkbox esté desmarcado
+                document.getElementById('gas-compare-indexed-fixed').checked = false;
+            } else if (gasIndexedSection) {
+                // Mostrar la sección si NO es modo DUAL
+                gasIndexedSection.classList.remove('hidden');
+            }
+            
             // Mostrar modal
             document.getElementById('gas-manual-input-modal').classList.remove('hidden');
             document.getElementById('gas-manual-input-modal').classList.add('flex');
@@ -21393,9 +21554,12 @@ ${clientName}
             const { results, dias, kwh, totalCliente, comparisonMode } = window.gasExportData;
             
             try {
-                // En versión DRK Only: siempre usar modo DRK simple (sin Power Cup, sin comparación dual)
-                const isPowerCup = false; // Forzado a false en versión DRK Only
-                const isDual = false; // Forzado a false en versión DRK Only - sin comparación indexada vs fija
+                // Detectar si es POWER CUP o DRK basado en comparisonMode
+                const isPowerCup = comparisonMode === 'overall_best';
+                
+                const isDual = results.length === 2 && 
+                              results.some(r => r.name.toUpperCase().includes('INDEX')) &&
+                              results.some(r => !r.name.toUpperCase().includes('INDEX'));
                 
                 if (isDual) {
                     const resIndexed = results.find(r => r.name.toUpperCase().includes('INDEX'));
@@ -21407,8 +21571,11 @@ ${clientName}
                         await generateGasPDF_Dual(resFijo, resIndexed, dias, kwh, totalCliente, clientName, comercialCode, clientAddress);
                     }
                 } else {
-                    // Siempre usar PDF simple con DRK
-                    await generateGasPDF_Simple(results[0], dias, kwh, totalCliente, clientName, comercialCode, clientAddress);
+                    if (isPowerCup) {
+                        await generateGasPDF_Simple_PowerCup(results[0], dias, kwh, totalCliente, clientName, comercialCode, clientAddress);
+                    } else {
+                        await generateGasPDF_Simple(results[0], dias, kwh, totalCliente, clientName, comercialCode, clientAddress);
+                    }
                 }
                 
                 // NUEVO: Restaurar idioma chino después de generar el PDF
@@ -22739,32 +22906,36 @@ ${clientName}
             
             yPos += 12;
             
-            // Info del cliente (caja con borde)
+            // Info del cliente (caja con borde) - altura aumentada para 4 líneas
             doc.setDrawColor(76, 175, 80);
             doc.setLineWidth(1.5);
-            doc.roundedRect(margin, yPos, pageWidth - (2 * margin), 22, 2, 2, 'S');
+            doc.roundedRect(margin, yPos, pageWidth - (2 * margin), 27, 2, 2, 'S');
             
             doc.setTextColor(75, 85, 99);
             doc.setFont('helvetica', 'bold');
             doc.setFontSize(11);
-            doc.text('COMPARATIVA PROFESIONAL GAS - DRK', margin + 5, yPos + 7);
+            doc.text('COMPARATIVA PROFESIONAL GAS - DRK', margin + 5, yPos + 6);
             
             doc.setFont('helvetica', 'normal');
             doc.setFontSize(9);
-            doc.text(tr('CLIENTE:') + ' ' + clientName, margin + 5, yPos + 13);
-            doc.text('TARIFA: ' + currentGasTariff, margin + 5, yPos + 18);
+            doc.text(tr('CLIENTE:') + ' ' + clientName, margin + 5, yPos + 11);
+            // Agregar CUPS
+            const gasParams = window.gasCalculationParams || {};
+            const cups = gasParams.cups || 'N/A';
+            doc.text('CUPS: ' + cups, margin + 5, yPos + 16);
+            doc.text('TARIFA: ' + currentGasTariff, margin + 5, yPos + 21);
             
             doc.setFont('helvetica', 'bold');
-            doc.text('COMERCIAL: ' + comercialCode, pageWidth - margin - 45, yPos + 13);
+            doc.text('COMERCIAL: ' + comercialCode, pageWidth - margin - 45, yPos + 11);
             
             // Dirección debajo del comercial (si existe)
             if (clientAddress) {
                 doc.setFont('helvetica', 'normal');
                 doc.setFontSize(8);
-                doc.text(tr('Dirección:') + ' ' + clientAddress, pageWidth - margin - 45, yPos + 18);
+                doc.text(tr('Dirección:') + ' ' + clientAddress, pageWidth - margin - 45, yPos + 16);
             }
             
-            yPos += 28;
+            yPos += 33;
             
             // CAJA GRIS "LA MEJOR OPCIÓN"
             doc.setFillColor(107, 125, 142);
@@ -23160,7 +23331,10 @@ ${clientName}
             doc.setFontSize(9);
             doc.setFont('helvetica', 'normal');
             doc.text(`CLIENTE: ${clientName}`, 17, y + 20);
-            doc.text(`CUPS: ${dualSupplies.length > 1 ? dualSupplies[0].cups.substring(0,20) + '...' : dualSupplies[0].cups}`, 17, y + 25);
+            // Usar cups de gasCalculationParams
+            const gasParams = window.gasCalculationParams || {};
+            const cups = gasParams.cups || 'N/A';
+            doc.text(`CUPS: ${cups}`, 17, y + 25);
             
             // Comercial en caja destacada (derecha)
             doc.setFillColor(240, 245, 248);
@@ -23363,7 +23537,7 @@ ${clientName}
             doc.roundedRect(leftX, leftY, colW, 18, 2, 2, 'F');
             doc.setTextColor(255, 255, 255);
             doc.setFontSize(7);
-            doc.text('[ES0021000020679723GY]', leftX + 3, leftY + 5);
+            doc.text(('[' + (window.gasCalculationParams && window.gasCalculationParams.cups ? window.gasCalculationParams.cups : 'N/A') + ']'), leftX + 3, leftY + 5);
             doc.text('Tipo: ' + currentGasTariff, leftX + colW - 3, leftY + 5, { align: 'right' });
             doc.text('Días: ' + dias, leftX + colW - 3, leftY + 10, { align: 'right' });
             doc.setFontSize(8);
@@ -23461,7 +23635,7 @@ ${clientName}
             doc.roundedRect(rightX, rightY, colW, 18, 2, 2, 'F');
             doc.setTextColor(255, 255, 255);
             doc.setFontSize(7);
-            doc.text('[ES0021000020679723GY]', rightX + 3, rightY + 5);
+            doc.text(('[' + (window.gasCalculationParams && window.gasCalculationParams.cups ? window.gasCalculationParams.cups : 'N/A') + ']'), rightX + 3, rightY + 5);
             doc.text('Tipo: ' + currentGasTariff, rightX + colW - 3, rightY + 5, { align: 'right' });
             doc.text('Días: ' + dias, rightX + colW - 3, rightY + 10, { align: 'right' });
             doc.setFontSize(8);
@@ -23567,7 +23741,7 @@ ${clientName}
             // Columna izquierda: FIJA
             doc.setTextColor(59, 130, 246);
             doc.setFontSize(12);
-            doc.text('POR QUE TARIFA FIJA?', leftX, y);
+            doc.text(tr('POR QUE TARIFA FIJA?'), leftX, y);
             
             y += 8;
             doc.setTextColor(0, 0, 0);
@@ -23590,7 +23764,7 @@ ${clientName}
             ];
             
             fijaTexts.forEach(line => {
-                doc.text(line, leftX, y);
+                doc.text(tr(line), leftX, y);
                 y += 4;
             });
             
@@ -23600,7 +23774,7 @@ ${clientName}
             doc.setTextColor(76, 175, 80);
             doc.setFont('helvetica', 'bold');
             doc.setFontSize(12);
-            doc.text('POR QUE TARIFA INDEXADA?', rightX, y);
+            doc.text(tr('POR QUE TARIFA INDEXADA?'), rightX, y);
             
             y += 8;
             doc.setTextColor(0, 0, 0);
@@ -23624,12 +23798,12 @@ ${clientName}
             ];
             
             indexTexts.forEach(line => {
-                doc.text(line, rightX, y);
+                doc.text(tr(line), rightX, y);
                 y += 4;
             });
             
             doc.save('GAS_Dual_' + currentGasTariff + '.pdf');
-            window.showMessageModal("✅ PDF generado", false);
+            window.showMessageModal("✅ PDF generado correctamente");
         }
         
         // ============================================
@@ -23759,7 +23933,10 @@ ${clientName}
             doc.text(tr('CLIENTE:') + ' ' + clientName + '', 25, y);
             
             y += 5;
-            doc.text('CUPS: ES0021000020679723GY', 25, y);
+            // Usar CUPS de gasCalculationParams
+            const gasParams = window.gasCalculationParams || {};
+            const cups = gasParams.cups || 'N/A';
+            doc.text(`CUPS: ${cups}`, 25, y);
             
             // Texto "COMERCIAL: <cz" en la esquina derecha
             doc.setTextColor(130, 140, 130);
@@ -23976,7 +24153,7 @@ ${clientName}
             doc.text(eur(bestResult.ahorro_anual) + tr('/ AÑO'), 15, y + 16);
             
             doc.save('GAS_PowerCup_' + tariffName + '_' + new Date().toISOString().slice(0,10) + '.pdf');
-            window.showMessageModal("✅ PDF POWER CUP generado", false);
+            window.showMessageModal("✅ PDF POWER CUP generado correctamente");
         }
         
         // PDF DUAL POWER CUP
@@ -24097,7 +24274,10 @@ ${clientName}
             doc.setFont('helvetica', 'normal');
             doc.setFontSize(9);
             doc.text(tr('CLIENTE:') + ' ' + clientName, 25, y + 12);
-            doc.text('CUPS: ES0021000020679723GY', 25, y + 17);
+            // Usar CUPS de gasCalculationParams
+            const gasParams = window.gasCalculationParams || {};
+            const cups = gasParams.cups || 'N/A';
+            doc.text(`CUPS: ${cups}`, 25, y + 17);
             
             // Comercial en caja destacada (derecha)
             doc.setFillColor(240, 245, 240);
@@ -24288,7 +24468,7 @@ ${clientName}
             doc.roundedRect(leftX, leftY, colW, 18, 2, 2, 'F');
             doc.setTextColor(255, 255, 255);
             doc.setFontSize(7);
-            doc.text('[ES0021000020679723GY]', leftX + 3, leftY + 5);
+            doc.text(('[' + (window.gasCalculationParams && window.gasCalculationParams.cups ? window.gasCalculationParams.cups : 'N/A') + ']'), leftX + 3, leftY + 5);
             doc.text('Tipo: ' + currentGasTariff, leftX + colW - 3, leftY + 5, { align: 'right' });
             doc.text('Días: ' + dias, leftX + colW - 3, leftY + 10, { align: 'right' });
             doc.setFontSize(8);
@@ -24386,7 +24566,7 @@ ${clientName}
             doc.roundedRect(rightX, rightY, colW, 18, 2, 2, 'F');
             doc.setTextColor(255, 255, 255);
             doc.setFontSize(7);
-            doc.text('[ES0021000020679723GY]', rightX + 3, rightY + 5);
+            doc.text(('[' + (window.gasCalculationParams && window.gasCalculationParams.cups ? window.gasCalculationParams.cups : 'N/A') + ']'), rightX + 3, rightY + 5);
             doc.text('Tipo: ' + currentGasTariff, rightX + colW - 3, rightY + 5, { align: 'right' });
             doc.text('Días: ' + dias, rightX + colW - 3, rightY + 10, { align: 'right' });
             doc.setFontSize(8);
@@ -24492,7 +24672,7 @@ ${clientName}
             // Columna izquierda: FIJA
             doc.setTextColor(59, 130, 246);
             doc.setFontSize(12);
-            doc.text('POR QUE TARIFA FIJA?', leftX, y);
+            doc.text(tr('POR QUE TARIFA FIJA?'), leftX, y);
             
             y += 8;
             doc.setTextColor(0, 0, 0);
@@ -24515,7 +24695,7 @@ ${clientName}
             ];
             
             fijaTexts.forEach(line => {
-                doc.text(line, leftX, y);
+                doc.text(tr(line), leftX, y);
                 y += 4;
             });
             
@@ -24525,7 +24705,7 @@ ${clientName}
             doc.setTextColor(76, 175, 80);
             doc.setFont('helvetica', 'bold');
             doc.setFontSize(12);
-            doc.text('POR QUE TARIFA INDEXADA?', rightX, y);
+            doc.text(tr('POR QUE TARIFA INDEXADA?'), rightX, y);
             
             y += 8;
             doc.setTextColor(0, 0, 0);
@@ -24549,7 +24729,7 @@ ${clientName}
             ];
             
             indexTexts.forEach(line => {
-                doc.text(line, rightX, y);
+                doc.text(tr(line), rightX, y);
                 y += 4;
             });
             
@@ -24984,6 +25164,103 @@ ${clientName}
                 "POTENCIA:": { en: "POWER:", zh: "功率：", de: "LEISTUNG:", fr: "PUISSANCE :" },
                 "ENERGIA:": { en: "ENERGY:", zh: "能源：", de: "ENERGIE:", fr: "ÉNERGIE :" },
                 "DESGLOSE DETALLADO POR SUMINISTRO": { en: "DETAILED BREAKDOWN BY SUPPLY", zh: "按供应详细分类", de: "DETAILLIERTE AUFSCHLÜSSELUNG NACH VERSORGUNG", fr: "RÉPARTITION DÉTAILLÉE PAR APPROVISIONNEMENT" },
+                "DESARROLLO DETALLADO - SUMINISTRO": { en: "DETAILED BREAKDOWN - SUPPLY", zh: "详细开发 - 供应", de: "DETAILLIERTE ENTWICKLUNG - VERSORGUNG", fr: "DÉVELOPPEMENT DÉTAILLÉ - APPROVISIONNEMENT" },
+                "DE": { en: "OF", zh: "的", de: "VON", fr: "DE" },
+                "TARIFAS FIJAS": { en: "FIXED RATES", zh: "固定费率", de: "FESTE TARIFE", fr: "TARIFS FIXES" },
+                "TARIFAS INDEXADAS": { en: "INDEXED RATES", zh: "指数费率", de: "INDEXIERTE TARIFE", fr: "TARIFS INDEXÉS" },
+                "CUAL ES LA DIFERENCIA?": { en: "WHAT'S THE DIFFERENCE?", zh: "有什么区别？", de: "WAS IST DER UNTERSCHIED?", fr: "QUELLE EST LA DIFFÉRENCE ?" },
+                "POR QUE TARIFA FIJA?": { en: "WHY FIXED RATE?", zh: "为什么选择固定费率？", de: "WARUM FESTER TARIF?", fr: "POURQUOI UN TARIF FIXE ?" },
+                "POR QUE TARIFA INDEXADA?": { en: "WHY INDEXED RATE?", zh: "为什么选择指数费率？", de: "WARUM INDEXIERTER TARIF?", fr: "POURQUOI UN TARIF INDEXÉ ?" },
+                "• Implica un precio fijo por los kilovatios que": { en: "• Means a fixed price for the kilowatts", zh: "• 意味着千瓦价格固定", de: "• Bedeutet einen festen Preis fur Kilowatt", fr: "• Implique un prix fixe pour les kilowatts" },
+                "  consumes (kWh).": { en: "  you consume (kWh).", zh: "  您消费（kWh）。", de: "  die Sie verbrauchen (kWh).", fr: "  que vous consommez (kWh)." },
+                "• El precio se mantiene estable,": { en: "• The price remains stable,", zh: "• 价格保持稳定，", de: "• Der Preis bleibt stabil,", fr: "• Le prix reste stable," },
+                "  independientemente de como se comporten los": { en: "  regardless of how prices behave in", zh: "  不受市场价格", de: "  unabhangig davon, wie sich die Preise auf", fr: "  quel que soit le comportement des prix sur" },
+                "  precios en el mercado electrico.": { en: "  the electricity market.", zh: "  在电力市场的影响。", de: "  dem Strommarkt verhalten.", fr: "  le marche de l'electricite." },
+                "• Cuando el precio del mercado esta alto, el": { en: "• When the market price is high, the", zh: "• 当市场价格高时，", de: "• Wenn der Marktpreis hoch ist, ist", fr: "• Lorsque le prix du marche est eleve, le" },
+                "  cliente esta protegido frente a sobresaltos.": { en: "  customer is protected from sudden increases.", zh: "  客户可以免受突然上涨的影响。", de: "  der Kunde vor plotzlichen Anstiegen geschutzt.", fr: "  client est protege contre les hausses soudaines." },
+                "• No tendras que estar pendiente de las": { en: "• You won't have to worry about", zh: "• 您无需担心市场", de: "• Sie mussen sich keine Gedanken uber", fr: "• Vous n'aurez pas a vous soucier des" },
+                "  variaciones del mercado y podras seguir": { en: "  market fluctuations and can continue", zh: "  波动，可以照常", de: "  Marktschwankungen machen und konnen weiterhin", fr: "  fluctuations du marche et pourrez continuer" },
+                "  usando la electricidad como siempre.": { en: "  using electricity as usual.", zh: "  使用电力。", de: "  Strom wie gewohnt nutzen.", fr: "  a utiliser l'electricite comme d'habitude." },
+                "• Implica un precio variable por los kilovatios": { en: "• Means a variable price for the kilowatts", zh: "• 意味着千瓦价格可变", de: "• Bedeutet einen variablen Preis fur Kilowatt", fr: "• Implique un prix variable pour les kilowatts" },
+                "  que consumes (kWh) cada mes.": { en: "  you consume (kWh) each month.", zh: "  每月消费（kWh）。", de: "  die Sie monatlich verbrauchen (kWh).", fr: "  que vous consommez (kWh) chaque mois." },
+                "• Es la tarifa mas justa, ya que pagas el coste": { en: "• It's the fairest rate, as you pay the real", zh: "• 这是最公平的费率，因为您支付", de: "• Es ist der fairste Tarif, da Sie die tatsachlichen", fr: "• C'est le tarif le plus juste, car vous payez le cout" },
+                "  real de la energia mes a mes.": { en: "  cost of energy month by month.", zh: "  每月能源的实际成本。", de: "  Energiekosten Monat fur Monat zahlen.", fr: "  reel de l'energie mois apres mois." },
+                "• Al contratarla, el cliente evita pagar": { en: "• By contracting it, the customer avoids paying", zh: "• 签订合同后，客户可以避免支付", de: "• Durch den Abschluss vermeidet der Kunde", fr: "• En le contractant, le client evite de payer" },
+                "  margenes adicionales cuando el precio de la": { en: "  additional margins when the electricity", zh: "  当电价便宜时的额外", de: "  zusatzliche Margen, wenn die Strom", fr: "  des marges supplementaires lorsque le prix de" },
+                "  electricidad es mas barato.": { en: "  price is cheaper.", zh: "  利润。", de: "  preise gunstiger sind.", fr: "  l'electricite est moins cher." },
+                "• A largo plazo, con un indexado 100%": { en: "• In the long term, with 100%", zh: "• 从长远来看，通过100%", de: "• Langfristig konnen mit einer", fr: "• A long terme, avec une indexation 100%" },
+                "  funcional, se puede obtener un ahorro": { en: "  functional indexation, savings of up", zh: "  功能性的指数化，可以节省", de: "  voll funktionsfahigen 100%igen Indexierung", fr: "  fonctionnelle, des economies pouvant" },
+                "  aproximado de hasta un 20% en epocas de": { en: "  to 20% can be achieved during periods", zh: "  在价格较好的时期高达", de: "  Einsparungen von bis zu 20% in Zeiten", fr: "  aller jusqu'a 20% peuvent etre realisees pendant" },
+                "  mejor precio.": { en: "  of better prices.", zh: "  20%。", de: "  besserer Preise erzielt werden.", fr: "  les periodes de meilleurs prix." },
+                "• Implica un precio fijo por los kilovatios que": { en: "• Means a fixed price for the kilowatts", zh: "• 意味着千瓦价格固定", de: "• Bedeutet einen festen Preis fur Kilowatt", fr: "• Implique un prix fixe pour les kilowatts" },
+                "  consumes (kWh).": { en: "  you consume (kWh).", zh: "  您消费（kWh）。", de: "  die Sie verbrauchen (kWh).", fr: "  que vous consommez (kWh)." },
+                "• El precio se mantiene estable,": { en: "• The price remains stable,", zh: "• 价格保持稳定，", de: "• Der Preis bleibt stabil,", fr: "• Le prix reste stable," },
+                "  independientemente de cómo se comporten los": { en: "  regardless of how prices behave in", zh: "  不受市场价格", de: "  unabhangig davon, wie sich die Preise auf", fr: "  quel que soit le comportement des prix sur" },
+                "  precios en el mercado eléctrico.": { en: "  the electricity market.", zh: "  在电力市场的影响。", de: "  dem Strommarkt verhalten.", fr: "  le marche de l'electricite." },
+                "• Cuando el precio del mercado está alto, el": { en: "• When the market price is high, the", zh: "• 当市场价格高时，", de: "• Wenn der Marktpreis hoch ist, ist", fr: "• Lorsque le prix du marche est eleve, le" },
+                "  cliente está protegido frente a sobresaltos.": { en: "  customer is protected from sudden increases.", zh: "  客户可以免受突然上涨的影响。", de: "  der Kunde vor plotzlichen Anstiegen geschutzt.", fr: "  client est protege contre les hausses soudaines." },
+                "• No tendrás que estar pendiente de las": { en: "• You won't have to worry about", zh: "• 您无需担心市场", de: "• Sie mussen sich keine Gedanken uber", fr: "• Vous n'aurez pas a vous soucier des" },
+                "  variaciones del mercado y podrás seguir": { en: "  market fluctuations and can continue", zh: "  波动，可以照常", de: "  Marktschwankungen machen und konnen weiterhin", fr: "  fluctuations du marche et pourrez continuer" },
+                "  usando la electricidad como siempre.": { en: "  using electricity as usual.", zh: "  使用电力。", de: "  Strom wie gewohnt nutzen.", fr: "  a utiliser l'electricite comme d'habitude." },
+                "• Implica un precio variable por los kilovatios": { en: "• Means a variable price for the kilowatts", zh: "• 意味着千瓦价格可变", de: "• Bedeutet einen variablen Preis fur Kilowatt", fr: "• Implique un prix variable pour les kilowatts" },
+                "  que consumes (kWh) cada mes.": { en: "  you consume (kWh) each month.", zh: "  每月消费（kWh）。", de: "  die Sie monatlich verbrauchen (kWh).", fr: "  que vous consommez (kWh) chaque mois." },
+                "• Es la tarifa más justa, ya que pagas el coste": { en: "• It's the fairest rate, as you pay the real", zh: "• 这是最公平的费率，因为您支付", de: "• Es ist der fairste Tarif, da Sie die tatsachlichen", fr: "• C'est le tarif le plus juste, car vous payez le cout" },
+                "  real de la energía mes a mes.": { en: "  cost of energy month by month.", zh: "  每月能源的实际成本。", de: "  Energiekosten Monat fur Monat zahlen.", fr: "  reel de l'energie mois apres mois." },
+                "• Al contratarla, el cliente evita pagar": { en: "• By contracting it, the customer avoids paying", zh: "• 签订合同后，客户可以避免支付", de: "• Durch den Abschluss vermeidet der Kunde", fr: "• En le contractant, le client evite de payer" },
+                "  márgenes adicionales cuando el precio de la": { en: "  additional margins when the electricity", zh: "  当电价便宜时的额外", de: "  zusatzliche Margen, wenn die Strom", fr: "  des marges supplementaires lorsque le prix de" },
+                "  electricidad es más barato.": { en: "  price is cheaper.", zh: "  利润。", de: "  preise gunstiger sind.", fr: "  l'electricite est moins cher." },
+                "• A largo plazo, con un indexado 100%": { en: "• In the long term, with 100%", zh: "• 从长远来看，通过100%", de: "• Langfristig konnen mit einer", fr: "• A long terme, avec une indexation 100%" },
+                "  funcional, se puede obtener un ahorro": { en: "  functional indexation, savings of up", zh: "  功能性的指数化，可以节省", de: "  voll funktionsfahigen 100%igen Indexierung", fr: "  fonctionnelle, des economies pouvant" },
+                "  aproximado de hasta un 20% en épocas de": { en: "  to 20% can be achieved during periods", zh: "  在价格较好的时期高达", de: "  Einsparungen von bis zu 20% in Zeiten", fr: "  aller jusqu'a 20% peuvent etre realisees pendant" },
+                "  mejor precio.": { en: "  of better prices.", zh: "  20%。", de: "  besserer Preise erzielt werden.", fr: "  les periodes de meilleurs prix." },
+                "Implica un precio fijo por los kilovatios que consumes (kWh).": { 
+                    en: "Means a fixed price for the kilowatts you consume (kWh).", 
+                    zh: "意味着您消费的千瓦（kWh）价格固定。", 
+                    de: "Bedeutet einen festen Preis für die verbrauchten Kilowatt (kWh).", 
+                    fr: "Implique un prix fixe pour les kilowatts que vous consommez (kWh)." 
+                },
+                "El precio se mantiene estable, independientemente de cómo se comporten los precios en el mercado eléctrico.": { 
+                    en: "The price remains stable, regardless of how prices behave in the electricity market.", 
+                    zh: "价格保持稳定，不受电力市场价格波动的影响。", 
+                    de: "Der Preis bleibt stabil, unabhängig davon, wie sich die Preise auf dem Strommarkt verhalten.", 
+                    fr: "Le prix reste stable, quel que soit le comportement des prix sur le marché de l'électricité." 
+                },
+                "Cuando el precio del mercado está alto, el cliente está protegido frente a sobresaltos.": { 
+                    en: "When the market price is high, the customer is protected from sudden increases.", 
+                    zh: "当市场价格高时，客户可以免受突然上涨的影响。", 
+                    de: "Wenn der Marktpreis hoch ist, ist der Kunde vor plötzlichen Anstiegen geschützt.", 
+                    fr: "Lorsque le prix du marché est élevé, le client est protégé contre les hausses soudaines." 
+                },
+                "No tendrás que estar pendiente de las variaciones del mercado y podrás seguir usando la electricidad como siempre.": { 
+                    en: "You won't have to worry about market fluctuations and can continue using electricity as usual.", 
+                    zh: "您无需担心市场波动，可以照常使用电力。", 
+                    de: "Sie müssen sich keine Gedanken über Marktschwankungen machen und können weiterhin Strom wie gewohnt nutzen.", 
+                    fr: "Vous n'aurez pas à vous soucier des fluctuations du marché et pourrez continuer à utiliser l'électricité comme d'habitude." 
+                },
+                "Implica un precio variable por los kilovatios que consumes (kWh) cada mes.": { 
+                    en: "Means a variable price for the kilowatts you consume (kWh) each month.", 
+                    zh: "意味着每月消费的千瓦（kWh）价格可变。", 
+                    de: "Bedeutet einen variablen Preis für die monatlich verbrauchten Kilowatt (kWh).", 
+                    fr: "Implique un prix variable pour les kilowatts que vous consommez (kWh) chaque mois." 
+                },
+                "Es la tarifa más justa, ya que pagas el coste real de la energía mes a mes.": { 
+                    en: "It's the fairest rate, as you pay the real cost of energy month by month.", 
+                    zh: "这是最公平的费率，因为您每月支付能源的实际成本。", 
+                    de: "Es ist der fairste Tarif, da Sie Monat für Monat die tatsächlichen Energiekosten zahlen.", 
+                    fr: "C'est le tarif le plus juste, car vous payez le coût réel de l'énergie mois après mois." 
+                },
+                "Al contratarla, el cliente evita pagar márgenes adicionales cuando el precio de la electricidad es más barato.": { 
+                    en: "By contracting it, the customer avoids paying additional margins when electricity prices are cheaper.", 
+                    zh: "签订合同后，当电价便宜时，客户可以避免支付额外的利润。", 
+                    de: "Durch den Abschluss vermeidet der Kunde zusätzliche Margen, wenn die Strompreise günstiger sind.", 
+                    fr: "En la contractant, le client évite de payer des marges supplémentaires lorsque les prix de l'électricité sont moins chers." 
+                },
+                "A largo plazo, con un indexado 100% funcional, se puede obtener un ahorro aproximado de hasta un 20% en épocas de mejor precio.": { 
+                    en: "In the long term, with a fully functional 100% indexation, savings of up to 20% can be achieved during periods of better prices.", 
+                    zh: "从长远来看，通过100%功能性的指数化，在价格较好的时期可以节省高达20%。", 
+                    de: "Langfristig können mit einer voll funktionsfähigen 100%igen Indexierung Einsparungen von bis zu 20% in Zeiten besserer Preise erzielt werden.", 
+                    fr: "À long terme, avec une indexation 100% fonctionnelle, des économies pouvant aller jusqu'à 20% peuvent être réalisées pendant les périodes de meilleurs prix." 
+                },
                 "DESGLOSE DETALLADO DE LA SIMULACIÓN": { en: "DETAILED SIMULATION BREAKDOWN", zh: "详细模拟分类", de: "DETAILLIERTE SIMULATIONSAUFSCHLÜSSELUNG", fr: "RÉPARTITION DÉTAILLÉE DE LA SIMULATION" },
                 "TÉRMINO POTENCIA (Precio en €/kW Día)": { en: "POWER TERM (Price in €/kW Day)", zh: "功率条款（价格€/kW日）", de: "LEISTUNGSTERM (Preis in €/kW Tag)", fr: "TERME PUISSANCE (Prix en €/kW Jour)" },
                 "TÉRMINO ENERGÍA (Precios en €/kWh)": { en: "ENERGY TERM (Prices in €/kWh)", zh: "能源条款（价格€/kWh）", de: "ENERGIETERM (Preise in €/kWh)", fr: "TERME ÉNERGIE (Prix en €/kWh)" },
@@ -26194,35 +26471,6 @@ ${clientName}
                     behavior: 'smooth'
                 });
             }
-        }
-    </script>
-    
-    <!-- Script adicional para versión DRK Only: forzar ocultamiento permanente -->
-    <script>
-        // Forzar ocultamiento al cargar la página
-        document.addEventListener('DOMContentLoaded', function() {
-            const modoSection = document.getElementById('modo-comparacion-section');
-            if (modoSection) {
-                modoSection.style.display = 'none';
-                modoSection.style.visibility = 'hidden';
-            }
-        });
-        
-        // Observer para detectar si algo intenta mostrar la sección
-        const observer = new MutationObserver(function(mutations) {
-            const modoSection = document.getElementById('modo-comparacion-section');
-            if (modoSection && modoSection.style.display !== 'none') {
-                modoSection.style.display = 'none';
-                modoSection.style.visibility = 'hidden';
-            }
-        });
-        
-        // Iniciar observación cuando el DOM esté listo
-        if (document.getElementById('modo-comparacion-section')) {
-            observer.observe(document.getElementById('modo-comparacion-section'), {
-                attributes: true,
-                attributeFilter: ['style', 'class']
-            });
         }
     </script>
 </body>
