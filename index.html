@@ -1132,7 +1132,7 @@
 
         <!-- 3. Initial Input View (Scan/Manual) -->
         <div id="initial-view" class="fade-in hidden">
-            <button onclick="goToInicio()" class="mb-4 text-sm text-slate-500 hover:text-drk-600 flex items-center gap-1">
+            <button onclick="currentTariffType === 'MULTICUPS' ? showMultiCupsSagaView() : goBackFromInitialView()" class="mb-4 text-sm text-slate-500 hover:text-drk-600 flex items-center gap-1">
                 &larr; Volver <span id="back-button-label">a selección</span>
             </button>
 
@@ -17968,12 +17968,20 @@ ${tr('Puedes adjuntarlo directamente en el email para tu cliente.')}`);
                     const tp1 = offer.offer.p_potencia_1 ? `${offer.offer.p_potencia_1.toFixed(3)}` : '-';
                     const tp2 = offer.offer.p_potencia_2 ? `${offer.offer.p_potencia_2.toFixed(3)}` : '-';
                     
-                    preciosHTML = `<div class="mt-2 pt-2 border-t border-slate-200 text-xs space-y-0.5">
-                        <div class="flex justify-between"><span class="text-slate-500">⚡ Energía P1:</span><span class="font-mono">${te1} €/kWh</span></div>
-                        <div class="flex justify-between"><span class="text-slate-500">⚡ Energía P2:</span><span class="font-mono">${te2} €/kWh</span></div>
-                        <div class="flex justify-between"><span class="text-slate-500">⚡ Energía P3:</span><span class="font-mono">${te3} €/kWh</span></div>
-                        <div class="flex justify-between"><span class="text-slate-500">🔌 Potencia P1:</span><span class="font-mono">${tp1} €/kW/año</span></div>
-                        <div class="flex justify-between"><span class="text-slate-500">🔌 Potencia P2:</span><span class="font-mono">${tp2} €/kW/año</span></div>
+                    preciosHTML = `<div class="mt-2 pt-2 border-t border-slate-200 text-[10px]">
+                        <div class="flex flex-col sm:flex-row gap-2 sm:gap-4 sm:justify-around">
+                            <div class="space-y-0.5">
+                                <div class="text-slate-600 font-semibold mb-1">⚡ Energía</div>
+                                <div class="flex justify-between sm:block"><span>E1:</span> <span class="font-mono whitespace-nowrap">${te1} €/kWh</span></div>
+                                <div class="flex justify-between sm:block"><span>E2:</span> <span class="font-mono whitespace-nowrap">${te2} €/kWh</span></div>
+                                <div class="flex justify-between sm:block"><span>E3:</span> <span class="font-mono whitespace-nowrap">${te3} €/kWh</span></div>
+                            </div>
+                            <div class="space-y-0.5 mt-2 sm:mt-0">
+                                <div class="text-slate-600 font-semibold mb-1">🔌 Potencia</div>
+                                <div class="flex justify-between sm:block"><span>P1:</span> <span class="font-mono whitespace-nowrap">${tp1} €/kW/año</span></div>
+                                <div class="flex justify-between sm:block"><span>P2:</span> <span class="font-mono whitespace-nowrap">${tp2} €/kW/año</span></div>
+                            </div>
+                        </div>
                     </div>`;
                 } else if (tariffTypeForPrices === '3.0TD') {
                     // 3.0TD: 6 periodos de energía y potencia
@@ -17990,20 +17998,26 @@ ${tr('Puedes adjuntarlo directamente en el email para tu cliente.')}`);
                     const tp5 = offer.offer.p_potencia_5 ? `${offer.offer.p_potencia_5.toFixed(2)}` : '-';
                     const tp6 = offer.offer.p_potencia_6 ? `${offer.offer.p_potencia_6.toFixed(2)}` : '-';
                     
-                    preciosHTML = `<div class="mt-2 pt-2 border-t border-slate-200 text-xs">
-                        <div class="grid grid-cols-2 gap-x-2 gap-y-0.5">
-                            <div class="flex justify-between text-xs"><span class="text-slate-500">⚡ Energía P1:</span><span class="font-mono">${te1} €/kWh</span></div>
-                            <div class="flex justify-between text-xs"><span class="text-slate-500">🔌 Potencia P1:</span><span class="font-mono">${tp1} €/kW/año</span></div>
-                            <div class="flex justify-between text-xs"><span class="text-slate-500">⚡ Energía P2:</span><span class="font-mono">${te2} €/kWh</span></div>
-                            <div class="flex justify-between text-xs"><span class="text-slate-500">🔌 Potencia P2:</span><span class="font-mono">${tp2} €/kW/año</span></div>
-                            <div class="flex justify-between text-xs"><span class="text-slate-500">⚡ Energía P3:</span><span class="font-mono">${te3} €/kWh</span></div>
-                            <div class="flex justify-between text-xs"><span class="text-slate-500">🔌 Potencia P3:</span><span class="font-mono">${tp3} €/kW/año</span></div>
-                            <div class="flex justify-between text-xs"><span class="text-slate-500">⚡ Energía P4:</span><span class="font-mono">${te4} €/kWh</span></div>
-                            <div class="flex justify-between text-xs"><span class="text-slate-500">🔌 Potencia P4:</span><span class="font-mono">${tp4} €/kW/año</span></div>
-                            <div class="flex justify-between text-xs"><span class="text-slate-500">⚡ Energía P5:</span><span class="font-mono">${te5} €/kWh</span></div>
-                            <div class="flex justify-between text-xs"><span class="text-slate-500">🔌 Potencia P5:</span><span class="font-mono">${tp5} €/kW/año</span></div>
-                            <div class="flex justify-between text-xs"><span class="text-slate-500">⚡ Energía P6:</span><span class="font-mono">${te6} €/kWh</span></div>
-                            <div class="flex justify-between text-xs"><span class="text-slate-500">🔌 Potencia P6:</span><span class="font-mono">${tp6} €/kW/año</span></div>
+                    preciosHTML = `<div class="mt-2 pt-2 border-t border-slate-200 text-[10px]">
+                        <div class="flex flex-col sm:flex-row gap-2 sm:gap-4 sm:justify-around">
+                            <div class="space-y-0.5">
+                                <div class="text-slate-600 font-semibold mb-1">⚡ Energía</div>
+                                <div class="flex justify-between sm:block"><span>E1:</span> <span class="font-mono whitespace-nowrap">${te1} €/kWh</span></div>
+                                <div class="flex justify-between sm:block"><span>E2:</span> <span class="font-mono whitespace-nowrap">${te2} €/kWh</span></div>
+                                <div class="flex justify-between sm:block"><span>E3:</span> <span class="font-mono whitespace-nowrap">${te3} €/kWh</span></div>
+                                <div class="flex justify-between sm:block"><span>E4:</span> <span class="font-mono whitespace-nowrap">${te4} €/kWh</span></div>
+                                <div class="flex justify-between sm:block"><span>E5:</span> <span class="font-mono whitespace-nowrap">${te5} €/kWh</span></div>
+                                <div class="flex justify-between sm:block"><span>E6:</span> <span class="font-mono whitespace-nowrap">${te6} €/kWh</span></div>
+                            </div>
+                            <div class="space-y-0.5 mt-2 sm:mt-0">
+                                <div class="text-slate-600 font-semibold mb-1">🔌 Potencia</div>
+                                <div class="flex justify-between sm:block"><span>P1:</span> <span class="font-mono whitespace-nowrap">${tp1} €/kW/año</span></div>
+                                <div class="flex justify-between sm:block"><span>P2:</span> <span class="font-mono whitespace-nowrap">${tp2} €/kW/año</span></div>
+                                <div class="flex justify-between sm:block"><span>P3:</span> <span class="font-mono whitespace-nowrap">${tp3} €/kW/año</span></div>
+                                <div class="flex justify-between sm:block"><span>P4:</span> <span class="font-mono whitespace-nowrap">${tp4} €/kW/año</span></div>
+                                <div class="flex justify-between sm:block"><span>P5:</span> <span class="font-mono whitespace-nowrap">${tp5} €/kW/año</span></div>
+                                <div class="flex justify-between sm:block"><span>P6:</span> <span class="font-mono whitespace-nowrap">${tp6} €/kW/año</span></div>
+                            </div>
                         </div>
                     </div>`;
                 }
@@ -18043,31 +18057,31 @@ ${tr('Puedes adjuntarlo directamente en el email para tu cliente.')}`);
                         <div class="text-right flex-shrink-0">
                             ${window.optimizedPowerEnabled && offer.ahorroTotal !== undefined && offer.solarSurplus && offer.solarSurplus.enabled ? `
                                 <!-- OPTIMIZACIÓN + EXCEDENTES SOLARES - MOSTRAR SOLO TOTAL -->
-                                <p class="text-xs text-slate-500">${tr('Ahorro anual total')}</p>
-                                <p class="text-xs text-slate-600 italic mb-1">(incl. optimización ⚡ y excedentes ☀️)</p>
-                                <p class="text-2xl font-black text-green-700">${eur(offer.ahorroTotal)}</p>
-                                ${comisionAnual > 0 ? `<p class="text-xs text-blue-600 font-semibold mt-1">💰 Comisión aprox. anual: ${eur(comisionAnual)}</p>` : ''}
+                                <p class="text-[10px] sm:text-xs text-slate-500">${tr('Ahorro anual total')}</p>
+                                <p class="text-[9px] sm:text-xs text-slate-600 italic mb-1">(incl. optimización ⚡ y excedentes ☀️)</p>
+                                <p class="text-xl sm:text-2xl font-black text-green-700">${eur(offer.ahorroTotal)}</p>
+                                ${comisionAnual > 0 ? `<p class="text-[9px] sm:text-xs text-blue-600 font-semibold mt-1 whitespace-nowrap">💰 Comisión: ${eur(comisionAnual)}</p>` : ''}
                             ` : window.optimizedPowerEnabled && offer.ahorroTotal !== undefined ? `
-                                <!-- Solo OPTIMIZACIÓN -->\n                                <p class="text-xs text-slate-500">${tr('Ahorro anual')}</p>
+                                <!-- Solo OPTIMIZACIÓN -->\n                                <p class="text-[10px] sm:text-xs text-slate-500">${tr('Ahorro anual')}</p>
                                 <p class="text-sm font-bold text-green-600">${eur(offer.savingsActual)}</p>
-                                <p class="text-xs text-orange-600 font-semibold">+ ${eur(offer.ahorroAdicional)} ⚡</p>
+                                <p class="text-[10px] sm:text-xs text-orange-600 font-semibold">+ ${eur(offer.ahorroAdicional)} ⚡</p>
                                 <p class="text-xl font-black text-green-700">${eur(offer.ahorroTotal)}</p>
-                                ${comisionAnual > 0 ? `<p class="text-xs text-blue-600 font-semibold mt-1">💰 Comisión aprox. anual: ${eur(comisionAnual)}</p>` : ''}
+                                ${comisionAnual > 0 ? `<p class="text-[9px] sm:text-xs text-blue-600 font-semibold mt-1 whitespace-nowrap">💰 Comisión: ${eur(comisionAnual)}</p>` : ''}
                             ` : offer.solarSurplus && offer.solarSurplus.enabled ? `
-                                <!-- Solo EXCEDENTES SOLARES -->\n                                <p class="text-xs text-slate-500">${tr('Ahorro anual')}</p>
+                                <!-- Solo EXCEDENTES SOLARES -->\n                                <p class="text-[10px] sm:text-xs text-slate-500">${tr('Ahorro anual')}</p>
                                 <p class="text-sm font-bold text-green-600">${eur(offer.savings - (offer.solarSurplus.annualDiscount || 0))}</p>
-                                <p class="text-xs text-orange-600 font-semibold">+ ${eur(offer.solarSurplus.annualDiscount || 0)} ☀️</p>
+                                <p class="text-[10px] sm:text-xs text-orange-600 font-semibold">+ ${eur(offer.solarSurplus.annualDiscount || 0)} ☀️</p>
                                 <p class="text-xl font-black text-green-700">${eur(offer.savings)}</p>
-                                ${comisionAnual > 0 ? `<p class="text-xs text-blue-600 font-semibold mt-1">💰 Comisión aprox. anual: ${eur(comisionAnual)}</p>` : ''}
+                                ${comisionAnual > 0 ? `<p class="text-[9px] sm:text-xs text-blue-600 font-semibold mt-1 whitespace-nowrap">💰 Comisión: ${eur(comisionAnual)}</p>` : ''}
                             ` : offer.solarSurplus && offer.solarSurplus.noPrice ? `
-                                <!-- No tiene compensación de excedentes -->\n                                <p class="text-xs text-slate-500">${tr('Ahorro anual')}</p>
+                                <!-- No tiene compensación de excedentes -->\n                                <p class="text-[10px] sm:text-xs text-slate-500">${tr('Ahorro anual')}</p>
                                 <p class="text-xl font-black text-green-600">${eur(offer.savings)}</p>
-                                <p class="text-xs text-slate-400 italic mt-1">☀️ ${tr('Sin compensación')}</p>
-                                ${comisionAnual > 0 ? `<p class="text-xs text-blue-600 font-semibold mt-1">💰 Comisión aprox. anual: ${eur(comisionAnual)}</p>` : ''}
+                                <p class="text-[10px] sm:text-xs text-slate-400 italic mt-1">☀️ ${tr('Sin compensación')}</p>
+                                ${comisionAnual > 0 ? `<p class="text-[9px] sm:text-xs text-blue-600 font-semibold mt-1 whitespace-nowrap">💰 Comisión: ${eur(comisionAnual)}</p>` : ''}
                             ` : `
-                                <!-- Sin excedentes ni optimización -->\n                                <p class="text-xs text-slate-500">${tr('Ahorro anual')}</p>
+                                <!-- Sin excedentes ni optimización -->\n                                <p class="text-[10px] sm:text-xs text-slate-500">${tr('Ahorro anual')}</p>
                                 <p class="text-xl font-black text-green-600">${eur(offer.savings)}</p>
-                                ${comisionAnual > 0 ? `<p class="text-xs text-blue-600 font-semibold mt-1">💰 Comisión aprox. anual: ${eur(comisionAnual)}</p>` : ''}
+                                ${comisionAnual > 0 ? `<p class="text-[9px] sm:text-xs text-blue-600 font-semibold mt-1 whitespace-nowrap">💰 Comisión: ${eur(comisionAnual)}</p>` : ''}
                             `}
                         </div>
                     </div>
@@ -18567,9 +18581,9 @@ ${tr('Puedes adjuntarlo directamente en el email para tu cliente.')}`);
             document.getElementById('start-scan-btn').onclick = startScanner;
             document.getElementById('capture-photo-btn').onclick = capturePhoto;
             
-            // Modificación del botón de volver para la vista de entrada
+            // Modificación del botón de volver para la vista de entrada - EN DRK ONLY va a inicio
             document.querySelector('#initial-view button:first-child').onclick = () => {
-                currentTariffType === 'MULTICUPS' ? showMultiCupsSagaView() : goBackFromInitialView();
+                goToInicio();
             };
             
             document.getElementById('upload-menu-btn').onclick = () => {
@@ -21106,21 +21120,6 @@ ${tr('Puedes adjuntarlo directamente en el email para tu cliente.')}`);
             if (multicupsSagaView) multicupsSagaView.classList.add('hidden');
         }
 
-        // Función para resetear completamente y volver al inicio (DRK únicamente)
-        function resetToLanding() {
-            // Limpiar todos los datos y flags
-            window.dualMode = false;
-            alreadyAskedAboutSolar = false;
-            skipDecisionModal = false;
-            hideDecisionCheckboxes = false;
-            solarSurplusEnabled = false;
-            lastComparisonResult = null;
-            availableOffers = [];
-            
-            // Volver a la pantalla de inicio
-            goToInicio();
-        }
-
         function goToInicio() {
             // Limpiar flag de modo DUAL
             window.dualMode = false;
@@ -21129,6 +21128,19 @@ ${tr('Puedes adjuntarlo directamente en el email para tu cliente.')}`);
             document.getElementById('screen-inicio').classList.add('active');
             // NO mostrar el modo de comparación en versión DRK only (solo hay una opción)
             // document.getElementById('modo-comparacion-section').style.display = 'block';
+        }
+
+        function resetToLanding() {
+            // Limpiar todos los flags y datos
+            window.dualMode = false;
+            window.alreadyAskedAboutSolar = false;
+            window.skipDecisionModal = false;
+            window.optimizedPowerEnabled = false;
+            window.lastComparisonResult = null;
+            window.availableOffers = null;
+            
+            // Volver a la pantalla de inicio
+            goToInicio();
         }
 
         function goToElectricidad() {
