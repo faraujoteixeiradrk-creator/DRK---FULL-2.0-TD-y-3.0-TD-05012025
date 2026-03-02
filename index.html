@@ -27751,24 +27751,22 @@ ${clientName}
  };
  function getPromptIA() {
   return `Eres un experto en facturas de electricidad españolas. Analiza esta factura con maxima precision.
+INSTRUCCION CRITICA: Si la imagen contiene VARIAS facturas superpuestas o visible al fondo, analiza UNICAMENTE la factura principal (la que aparece en primer plano, mas grande y legible). Ignora completamente cualquier factura que aparezca al fondo o parcialmente visible detras de la principal.
 INSTRUCCIONES:
-1. CUPS: Codigo de 20-22 caracteres que SIEMPRE empieza por "ES". Esta en "Datos del contrato", "Datos de suministro" o "Informacion adicional". NO confundir con referencias de contrato ni numeros de contador.
-2. TARIFA: Busca "Peaje de acceso", "ATR" o "Tarifa". Sera "2.0TD" (menos de 15kW, 2 potencias) o "3.0TD" (empresa, 6 potencias).
+1. CUPS: Codigo de 20-22 caracteres que SIEMPRE empieza por "ES". Esta en "Datos del contrato", "Datos de suministro", "Datos del suministro" o seccion similar. Si hay varios CUPS visibles de distintas facturas, usa el de la factura principal (primer plano). NO confundir con referencias de contrato ni numeros de contador.
+2. TARIFA: Busca "Peaje de acceso", "ATR", "Tarifa de acceso" o "Tarifa". Sera "2.0TD" (menos de 15kW, 2 potencias) o "3.0TD" (empresa, 6 potencias).
 3. DIAS: Del periodo de facturacion o deducelo de la formula kW * precio * dias.
-4. POTENCIAS (kW contratados): En "Detalle de factura" o "Facturacion por potencia". Para 2.0TD: P1 punta y P2 valle. Para 3.0TD: P1 a P6. Son los kW CONTRATADOS, NO el importe en euros.
+4. POTENCIAS (kW contratados): En "Detalle de factura", "Tu factura en detalle" o "Facturacion por potencia". Para 2.0TD: P1 punta y P2 valle. Para 3.0TD: P1 a P6. Son los kW CONTRATADOS, NO el importe en euros. Si hay varias potencias visibles de distintas facturas, usa las de la factura principal.
 5. ENERGIA (kWh consumidos en el periodo):
-   - Busca en "Facturacion por energia consumida" o "Detalle de factura".
+   - Busca en "Facturacion por energia consumida", "Tu factura en detalle" o "Lecturas del contador" columna Consumo.
    - Para 2.0TD: E1 punta, E2 llano, E3 valle.
    - Para 3.0TD: E1 a E6.
-   - CRITICO para facturas IBERDROLA: La factura muestra DOS tipos de datos que NO debes confundir:
- * "Lecturas desagregadas" (punta/llano/valle en kWh) = lecturas ACUMULADAS del contador. NO usar estos valores.
- * "Sus consumos desagregados han sido punta: X kWh; llano: X kWh; valle X kWh" = consumo REAL del periodo. USAR ESTOS VALORES.
-   - Si ves consumo TOTAL en la factura (ej: "Consumo Total 356,280 kWh") pero la tabla de desglose por periodos es ilegible o esta girada, calcula asi: busca en el detalle de factura los importes por periodo (ej: "Facturacion del Consumo 86,92 kWh x precio") para deducir los kWh reales. Si aun asi no puedes, distribuye: E1=25%, E2=25%, E3=50% del total. Indica en notas que es estimacion.
-   - NUNCA pongas 0 en E1/E2/E3 si hay un consumo total visible mayor de 0. Siempre distribuye.
-6. CONSUMO_TOTAL_KWH: El total de kWh consumidos en el periodo (ej: "Consumo Total 356,280 kWh"). Extraelo siempre aunque no puedas ver el desglose por periodos.
-7. TOTAL: El importe final a pagar ("TOTAL IMPORTE FACTURA" o "TOTAL").
+   - CRITICO para facturas IBERDROLA: usa solo "Sus consumos desagregados han sido punta/llano/valle" NO las lecturas acumuladas.
+   - Si ves consumo TOTAL pero desglose ilegible: busca kWh en el detalle por periodo. Si no puedes, distribuye E1=25%, E2=25%, E3=50% e indica en notas.
+   - NUNCA pongas 0 en E1/E2/E3 si hay un consumo total visible mayor de 0.
+6. TOTAL: El importe final a pagar ("TOTAL IMPORTE FACTURA", "TOTAL A PAGAR" o "Total a pagar"). Si hay varios totales, usa el de la factura principal.
 Devuelve SOLO este JSON sin texto adicional ni markdown:
-{"cups":"ES...","tarifa":"2.0TD","dias":30,"potencias_kw":{"p1":0.0,"p2":0.0,"p3":0.0,"p4":0.0,"p5":0.0,"p6":0.0},"energia_kwh":{"e1":0,"e2":0,"e3":0,"e4":0,"e5":0,"e6":0},"consumo_total_kwh":0,"total_factura":0.00,"notas":""}`;
+{"cups":"ES...","tarifa":"2.0TD","dias":30,"potencias_kw":{"p1":0.0,"p2":0.0,"p3":0.0,"p4":0.0,"p5":0.0,"p6":0.0},"energia_kwh":{"e1":0,"e2":0,"e3":0,"e4":0,"e5":0,"e6":0},"total_factura":0.00,"notas":""}`;
  }
   // ===== DRAG & DROP ZONES =====
  function setupDragZone(zoneId, tariff) {
